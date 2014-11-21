@@ -5,6 +5,8 @@
  */
 package rmistoreclient.ui.tabs;
 
+import rmistoreclient.ui.tabs.items.RMIStoreClientBuyItem;
+
 /**
  *
  * @author davidsoendoro
@@ -18,6 +20,7 @@ public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab {
         tabName = "Buy";
         
         initComponents();
+        initItems();
     }
 
     /**
@@ -29,19 +32,39 @@ public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPaneBuy = new javax.swing.JScrollPane();
+        jPanelBuy = new javax.swing.JPanel();
+
+        jPanelBuy.setLayout(new java.awt.GridLayout(0, 1));
+        jScrollPaneBuy.setViewportView(jPanelBuy);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPaneBuy, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPaneBuy, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel jPanelBuy;
+    private javax.swing.JScrollPane jScrollPaneBuy;
     // End of variables declaration//GEN-END:variables
+
+    private void initItems() {
+        jPanelBuy.add(new RMIStoreClientBuyItem());
+        jPanelBuy.add(new RMIStoreClientBuyItem());
+        
+        jPanelBuy.revalidate();
+        jPanelBuy.repaint();
+    }
 }
