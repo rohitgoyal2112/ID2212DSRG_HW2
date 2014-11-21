@@ -10,7 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import rmistore.commons.exceptions.Rejected;
 import rmistoreserver.Item;
-import rmistoreserver.implementations.ServerRemoteImpl;
+import rmistoreserver.Wish;
 /**
  *
  * @author davidsoendoro
@@ -42,8 +42,9 @@ implements rmistore.commons.interfaces.CustomerRemote {
         this.serverRemoteObj.getClientObj(myId).receiveMessage("You could not buy!");
         } 
     }
-    public void wishItem(int itemId, double price)throws Rejected,RemoteException{
-        
+    public void wishItem(String name, double price)throws Rejected,RemoteException{
+        this.serverRemoteObj.wishItemForCustomer(name, new Wish(myId,price));
+                
     }
     public ArrayList<Item> getUserItems()throws Rejected,RemoteException{
       return this.serverRemoteObj.getUserItemsFromHash(myId);

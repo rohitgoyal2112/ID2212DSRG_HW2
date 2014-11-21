@@ -14,6 +14,7 @@ import java.util.Map;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistoreserver.Item;
 import rmistoreserver.CustomerWrap;
+import rmistoreserver.Wish;
 /**
  *
  * @author davidsoendoro
@@ -24,6 +25,7 @@ implements rmistore.commons.interfaces.ServerRemote {
     int customerId=1;
     HashMap<Integer, Item> itemHash= new HashMap<>();
     HashMap<Integer,CustomerWrap> customerHash=new HashMap<>();
+    HashMap<String, ArrayList<Wish>> wishHash=new HashMap<>();
     public ServerRemoteImpl(String RMIStoreName) throws RemoteException {
     }
 
@@ -55,6 +57,22 @@ implements rmistore.commons.interfaces.ServerRemote {
     
     public synchronized boolean addItem(int itemId, Item item){
        itemHash.put(itemId, item);
+       //notify wishList customers
+       for(String key:wishHash.keySet()){
+            if(item.getName().contains(key)==true){
+                for(Wish wishObj:wishHash.get(key)){
+                    if(item.getPrice()<=wishObj.getPrice()){
+                        try{
+                        this.getClientObj(wishObj.getCustomerid()).receiveMessage("Item available");
+                        }
+                        catch(RemoteException r){
+                                
+                        }
+                    }
+                    }
+                
+            }
+        }
        return true;
     }
     
@@ -85,5 +103,15 @@ implements rmistore.commons.interfaces.ServerRemote {
         }
         return items;
     }
-    
+    public void wishItemForCustomer(String name,Wish wishObj){
+        ArrayList<Wish> wishList;
+        if(wishHash.get(name)!=null){
+            wishList= wishHash.get(name);
+        }
+        else{
+            wishList=new ArrayList();
+        }
+        wishList.add(wishObj);
+        wishHash.put(name,wishList);
+    }
 }

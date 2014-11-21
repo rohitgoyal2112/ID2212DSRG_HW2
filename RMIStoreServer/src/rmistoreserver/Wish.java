@@ -4,27 +4,21 @@
  * and open the template in the editor.
  */
 package rmistoreserver;
+
 /**
  *
  * @author rohitgoyal
  */
-public class Item {
+public class Wish {
     int customerId;
-    String name;
     double price;
-    public Item(int customerId,String name,double price){
+    public Wish(int customerId,double price){
         this.customerId=customerId;
-        this.name=name;
-        this.price=price;      
+        this.price=price;
     }
-    public int getCustomerId(){
+    public  int getCustomerid(){
         return customerId;
     }
-    
-    public String getName(){
-        return name;
-    }
-    
     public double getPrice(){
         return price;
     }
