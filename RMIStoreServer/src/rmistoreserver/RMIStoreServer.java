@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rmistoreserver.helper.RMIStoreServerHelper;
@@ -21,7 +22,6 @@ import rmistore.commons.interfaces.ServerRemote;
  * @author davidsoendoro
  */
 public class RMIStoreServer extends Thread {
-
     public RMIStoreServer(String[] args) {
         try {
             Runtime.getRuntime().exec("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false");
