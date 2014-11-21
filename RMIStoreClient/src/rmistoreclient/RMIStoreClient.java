@@ -13,37 +13,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import rmistore.commons.interfaces.ServerRemote;
 import rmistoreclient.helper.RMIStoreClientHelper;
+import rmistoreclient.ui.RMIStoreClientRegister;
 
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreClient extends Thread {
+public class RMIStoreClient {
 
-    private ServerRemote rmistoreObj;
-    
-    private RMIStoreClient(String[] args) {
-        try {
-            rmistoreObj = (ServerRemote)Naming.lookup(RMIStoreClientHelper.RMIStoreName);
-        } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-            Logger.getLogger(RMIStoreClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    public void run() {
-        try {
-            rmistoreObj.register("Test");
-        } catch (RemoteException ex) {
-            Logger.getLogger(RMIStoreClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new RMIStoreClient(args).run();
+        new RMIStoreClientRegister().setVisible(true);
     }
 
 }

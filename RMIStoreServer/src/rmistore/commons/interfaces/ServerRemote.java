@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
  * @author davidsoendoro
  */
 public interface ServerRemote extends Remote {
-    public rmistore.commons.interfaces.CustomerRemote register(String name)
+    public rmistore.commons.interfaces.CustomerRemote register(String name,
+            rmistore.commons.interfaces.ClientRemote clientRemote)
           throws RemoteException, rmistore.commons.exceptions.Rejected;
 }

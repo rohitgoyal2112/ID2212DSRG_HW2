@@ -19,11 +19,13 @@ implements rmistore.commons.interfaces.ServerRemote {
     }
 
     @Override
-    public synchronized rmistore.commons.interfaces.CustomerRemote register(String name) 
+    public synchronized rmistore.commons.interfaces.CustomerRemote register(String name,
+            rmistore.commons.interfaces.ClientRemote clientRemote) 
             throws RemoteException, rmistore.commons.exceptions.Rejected {
         rmistore.commons.interfaces.CustomerRemote client = new CustomerRemoteImpl();
         
         System.out.println("Register called! " + name);
+        clientRemote.receiveMessage("Hello World!");
         
         return client;
     }
