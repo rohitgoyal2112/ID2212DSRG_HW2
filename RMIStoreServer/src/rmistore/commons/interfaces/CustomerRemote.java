@@ -5,7 +5,6 @@
  */
 package rmistore.commons.interfaces;
 import rmistore.commons.exceptions.Rejected;
-import rmistoreserver.Item;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;

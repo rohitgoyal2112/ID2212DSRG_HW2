@@ -4,13 +4,19 @@
  * and open the template in the editor.
  */
 package rmistore.commons.interfaces;
-
+import rmistore.commons.exceptions.Rejected;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
  * @author davidsoendoro
  */
-public interface CustomerRemote extends Remote {
-    
+public interface CustomerRemote extends Remote{
+    public void sellItem(String itemName, double price) throws Rejected,RemoteException;
+    public void buyItem(int itemId)throws Rejected,RemoteException;
+    public void wishItem(String name, double price)throws Rejected,RemoteException;
+    public ArrayList<Item> getUserItems()throws Rejected,RemoteException;
+    public boolean unRegister()throws Rejected,RemoteException;
 }

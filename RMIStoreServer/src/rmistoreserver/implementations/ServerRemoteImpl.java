@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import rmistore.commons.interfaces.ClientRemote;
-import rmistoreserver.Item;
+import rmistore.commons.interfaces.Item;
 import rmistoreserver.CustomerWrap;
 import rmistoreserver.Wish;
 /**
