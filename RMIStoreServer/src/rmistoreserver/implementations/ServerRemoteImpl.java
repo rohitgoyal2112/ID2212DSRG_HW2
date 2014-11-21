@@ -41,6 +41,10 @@ implements rmistore.commons.interfaces.ServerRemote {
         return client;
     }
     
+    public synchronized boolean unregister(int customerId){
+        customerHash.remove(customerId);
+        return true;
+    }
     public synchronized int getCustomerId(){
         return customerId++;
     }
@@ -70,7 +74,7 @@ implements rmistore.commons.interfaces.ServerRemote {
            return false;
     }
     public ClientRemote getClientObj(int customerId){
-        return customerHash.get(customerId).getClientObj();
+        return customerHash.get(customerId).getClientRemoteObj();
     }
     public ArrayList<Item> getUserItemsFromHash(int customerId){
         ArrayList<Item> items=new ArrayList<>();

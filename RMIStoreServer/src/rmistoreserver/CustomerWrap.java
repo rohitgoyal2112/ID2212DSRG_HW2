@@ -17,4 +17,7 @@ public class CustomerWrap {
         this.name=name;
         this.clientRemoteObj=clientRemoteObj;
     }
+    public  ClientRemote getClientRemoteObj(){
+        return clientRemoteObj;
+    }
 }
