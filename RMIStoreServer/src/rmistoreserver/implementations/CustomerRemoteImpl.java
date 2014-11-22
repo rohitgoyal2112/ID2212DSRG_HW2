@@ -25,11 +25,15 @@ implements rmistore.commons.interfaces.CustomerRemote {
     this.serverRemoteObj=serverRemoteObj;
     }
     public void sellItem(String itemName, double price) throws Rejected,RemoteException{
+        int id=serverRemoteObj.getItemId();
+        Item item=new Item(id,this.myId,itemName,price);
         
-        Item item=new Item(this.myId,itemName,price);
-        if(this.serverRemoteObj.addItem(serverRemoteObj.getItemId(), item)==false){
+        if(this.serverRemoteObj.addItem(id, item)==false){
             throw new Rejected("Could not be added to sell list");
         }
+        else
+           this.serverRemoteObj.getClientObj(myId).receiveMessage("Item listed for selling");
+        
             
     }
     public void buyItem(int itemId)throws Rejected,RemoteException{
@@ -49,6 +53,12 @@ implements rmistore.commons.interfaces.CustomerRemote {
     public ArrayList<Item> getUserItems()throws Rejected,RemoteException{
       return this.serverRemoteObj.getUserItemsFromHash(myId);
     }
+    
+    
+    public ArrayList<Item> getAllItems()throws Rejected,RemoteException{
+      return this.serverRemoteObj.getAllItemsFromHash();
+    }
+    
     public boolean unRegister()throws Rejected,RemoteException{
         this.serverRemoteObj.unregister(myId);
        return true; 

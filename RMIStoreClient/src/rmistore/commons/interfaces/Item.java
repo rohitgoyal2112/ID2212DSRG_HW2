@@ -4,15 +4,20 @@
  * and open the template in the editor.
  */
 package rmistore.commons.interfaces;
+
+import java.io.Serializable;
+
 /**
  *
  * @author rohitgoyal
  */
-public class Item {
+public class Item implements Serializable{
+    int itemId;
     int customerId;
     String name;
     double price;
-    public Item(int customerId,String name,double price){
+    public Item(int itemId,int customerId,String name,double price){
+        this.itemId=itemId;
         this.customerId=customerId;
         this.name=name;
         this.price=price;      
@@ -28,4 +33,8 @@ public class Item {
     public double getPrice(){
         return price;
     }
+    public int getItemId(){
+        return itemId;
+    }
+    
 }

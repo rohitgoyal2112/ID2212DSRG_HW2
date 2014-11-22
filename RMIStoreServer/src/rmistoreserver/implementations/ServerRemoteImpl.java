@@ -57,13 +57,14 @@ implements rmistore.commons.interfaces.ServerRemote {
     
     public synchronized boolean addItem(int itemId, Item item){
        itemHash.put(itemId, item);
+       // System.out.println("status of item hash "+ itemHash.toString());
        //notify wishList customers
        for(String key:wishHash.keySet()){
             if(item.getName().contains(key)==true){
                 for(Wish wishObj:wishHash.get(key)){
                     if(item.getPrice()<=wishObj.getPrice()){
                         try{
-                        this.getClientObj(wishObj.getCustomerid()).receiveMessage("Item available");
+                        this.getClientObj(wishObj.getCustomerid()).receiveMessage("Item "+ key+ " available for price "+item.getPrice());
                         }
                         catch(RemoteException r){
                                 
@@ -81,7 +82,7 @@ implements rmistore.commons.interfaces.ServerRemote {
             Item item= itemHash.remove(itemId);
             //credit
             try{
-            this.getClientObj(item.getCustomerId()).receiveMessage("Item sold");
+            this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName());
             }
             catch(RemoteException r){
              
@@ -103,6 +104,15 @@ implements rmistore.commons.interfaces.ServerRemote {
         }
         return items;
     }
+    
+    public ArrayList<Item> getAllItemsFromHash(){
+        ArrayList<Item> items=new ArrayList<>();
+        for(int key:itemHash.keySet()){
+                items.add(itemHash.get(key));
+        }
+        return items;
+    }
+    
     public void wishItemForCustomer(String name,Wish wishObj){
         ArrayList<Wish> wishList;
         if(wishHash.get(name)!=null){

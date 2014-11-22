@@ -11,7 +11,7 @@ package rmistoreclient.helper;
  */
 public class RMIStoreClientHelper {
     
-    public static String RMIStoreName = "rmi://localhost:1099/RMIStore";
+    public static String RMIStoreName = "rmi://127.0.0.1:1099/RMIStore";
     
     public final static int STARTRMI_COMMAND = 0;
     public final static int REGISTER_COMMAND = 1;
