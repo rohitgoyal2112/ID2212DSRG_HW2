@@ -25,7 +25,7 @@ public class RMIStoreServer extends Thread {
     public RMIStoreServer(String[] args) {
         try {
             Runtime.getRuntime().exec("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false");
-            LocateRegistry.createRegistry(1099);
+            LocateRegistry.createRegistry(1100);
             LocateRegistry.getRegistry();
         } catch (IOException ex) {
             System.out.println("Port already opened!");

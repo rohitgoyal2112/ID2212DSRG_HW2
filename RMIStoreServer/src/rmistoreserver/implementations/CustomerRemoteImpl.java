@@ -8,6 +8,8 @@ package rmistoreserver.implementations;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import rmistore.commons.exceptions.Rejected;
 import rmistore.commons.interfaces.Item;
 import rmistoreserver.Wish;
@@ -21,10 +23,11 @@ implements rmistore.commons.interfaces.CustomerRemote {
     ServerRemoteImpl serverRemoteObj;
     
     public CustomerRemoteImpl(int myId, ServerRemoteImpl serverRemoteObj) throws RemoteException {
-    this.myId=myId;
-    this.serverRemoteObj=serverRemoteObj;
+        this.myId=myId;
+        this.serverRemoteObj=serverRemoteObj;
     }
-    public void sellItem(String itemName, double price) throws Rejected,RemoteException{
+
+    public synchronized void sellItem(String itemName, double price) throws Rejected,RemoteException{
         int id=serverRemoteObj.getItemId();
         Item item=new Item(id,this.myId,itemName,price);
         
@@ -36,31 +39,31 @@ implements rmistore.commons.interfaces.CustomerRemote {
         
             
     }
-    public void buyItem(int itemId)throws Rejected,RemoteException{
+    
+    public synchronized void buyItem(int itemId)throws Rejected,RemoteException{
         //check if user has sufficient balance
         if(this.serverRemoteObj.buyItem(itemId)==true){
-        //debit money
-        this.serverRemoteObj.getClientObj(myId).receiveMessage("You bought!");
+            //debit money
+            this.serverRemoteObj.getClientObj(myId).receiveMessage("You bought!");
         }
         else{
-        this.serverRemoteObj.getClientObj(myId).receiveMessage("You could not buy!");
+            this.serverRemoteObj.getClientObj(myId).receiveMessage("You could not buy!");
         } 
     }
-    public void wishItem(String name, double price)throws Rejected,RemoteException{
+    public synchronized void wishItem(String name, double price)throws Rejected,RemoteException {
         this.serverRemoteObj.wishItemForCustomer(name, new Wish(myId,price));
-                
     }
-    public ArrayList<Item> getUserItems()throws Rejected,RemoteException{
-      return this.serverRemoteObj.getUserItemsFromHash(myId);
-    }
-    
-    
-    public ArrayList<Item> getAllItems()throws Rejected,RemoteException{
-      return this.serverRemoteObj.getAllItemsFromHash();
+
+    public synchronized ArrayList<Item> getOtherItems()throws Rejected,RemoteException {
+        return this.serverRemoteObj.getOtherItems(myId);
     }
     
-    public boolean unRegister()throws Rejected,RemoteException{
+    public synchronized ArrayList<Item> getUserItems()throws Rejected,RemoteException {
+        return this.serverRemoteObj.getUserItemsFromHash(myId);
+    }
+
+    public synchronized boolean unRegister()throws Rejected,RemoteException{
         this.serverRemoteObj.unregister(myId);
-       return true; 
+        return true; 
     }
 }

@@ -17,7 +17,7 @@ public interface CustomerRemote extends Remote{
     public void sellItem(String itemName, double price) throws Rejected,RemoteException;
     public void buyItem(int itemId)throws Rejected,RemoteException;
     public void wishItem(String name, double price)throws Rejected,RemoteException;
+    public ArrayList<Item> getOtherItems()throws Rejected,RemoteException;
     public ArrayList<Item> getUserItems()throws Rejected,RemoteException;
-    public ArrayList<Item> getAllItems()throws Rejected,RemoteException;
     public boolean unRegister()throws Rejected,RemoteException;
 }

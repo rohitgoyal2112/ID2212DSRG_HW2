@@ -5,13 +5,21 @@
  */
 package rmistoreclient.ui.tabs;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JLabel;
+import rmistore.commons.interfaces.Item;
+import rmistoreclient.helper.RMIStoreClientHelper;
+import rmistoreclient.interfaces.Callback;
 import rmistoreclient.ui.tabs.items.RMIStoreClientBuyItem;
 
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab {
+public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab implements Callback {
 
     /**
      * Creates new form RMIStoreClientBuyPanel
@@ -20,7 +28,6 @@ public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab {
         tabName = "Buy";
         
         initComponents();
-        initItems();
     }
 
     /**
@@ -60,11 +67,28 @@ public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab {
     private javax.swing.JScrollPane jScrollPaneBuy;
     // End of variables declaration//GEN-END:variables
 
-    private void initItems() {
-        jPanelBuy.add(new RMIStoreClientBuyItem());
-        jPanelBuy.add(new RMIStoreClientBuyItem());
-        
-        jPanelBuy.revalidate();
-        jPanelBuy.repaint();
+    @Override
+    public void doCallback(Object arguments) {
+        if(arguments != null && arguments.getClass() == ArrayList.class) {
+            ArrayList<Item> items = (ArrayList<Item>) arguments;
+            
+            jPanelBuy.removeAll();
+            for(Item item : items) {
+                System.out.println(item.getName());
+                jPanelBuy.add(new RMIStoreClientBuyItem(item));
+            }
+            
+            jPanelBuy.revalidate();
+            jPanelBuy.repaint();
+        }
+    }
+
+    public void refreshItemList() {
+        try {
+            RMIStoreClientHelper.customerRemoteObj.callback = this;
+            RMIStoreClientHelper.customerRemoteObj.getOtherItems();
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIStoreClientBuyPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

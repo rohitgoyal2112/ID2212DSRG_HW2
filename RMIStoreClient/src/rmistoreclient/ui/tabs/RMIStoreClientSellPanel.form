@@ -33,7 +33,9 @@
                               <Component id="jTextFieldItemName" min="-2" pref="120" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="93" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabelCurrency" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="61" max="32767" attributes="0"/>
                       <Component id="jButtonAdd" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
@@ -67,6 +69,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabelItemPrice" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jTextFieldItemPrice" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelCurrency" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -117,6 +120,11 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonAddActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelCurrency">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="USD"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

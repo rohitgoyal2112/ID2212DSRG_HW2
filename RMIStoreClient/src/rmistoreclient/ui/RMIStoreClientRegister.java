@@ -17,6 +17,7 @@ import rmistore.commons.interfaces.ServerRemote;
 import rmistoreclient.RMIStoreClient;
 import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.implementations.ClientRemoteImpl;
+import rmistoreclient.implementations.CustomerRemoteThreadImpl;
 
 /**
  *
@@ -157,6 +158,8 @@ public class RMIStoreClientRegister extends javax.swing.JFrame {
                         
                         CustomerRemote customerRemote = rmistoreObj.register(
                                 jTextFieldUsername.getText(), clientRemote);
+                        RMIStoreClientHelper.customerRemoteObj = 
+                                new CustomerRemoteThreadImpl(customerRemote);
                         
                         RMIStoreClientMain rmiStoreClientMain = new RMIStoreClientMain(
                             RMIStoreClientRegister.this, jTextFieldUsername.getText());

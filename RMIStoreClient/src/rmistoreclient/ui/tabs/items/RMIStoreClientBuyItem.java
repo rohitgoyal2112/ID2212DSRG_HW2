@@ -5,17 +5,33 @@
  */
 package rmistoreclient.ui.tabs.items;
 
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import rmistore.commons.interfaces.Item;
+import rmistoreclient.helper.RMIStoreClientHelper;
+
 /**
  *
  * @author davidsoendoro
  */
 public class RMIStoreClientBuyItem extends javax.swing.JPanel {
 
+    private Item item;
+    
     /**
      * Creates new form RMIStoreClientBuyItem
      */
     public RMIStoreClientBuyItem() {
         initComponents();
+    }
+    
+    public RMIStoreClientBuyItem(Item item) {
+        this.item = item;
+        
+        initComponents();
+        
+        jLabelName.setText(item.getName() + " $" + item.getPrice());
     }
 
     /**
@@ -33,12 +49,17 @@ public class RMIStoreClientBuyItem extends javax.swing.JPanel {
         jTextFieldWishPrice = new javax.swing.JTextField();
         jButtonWish = new javax.swing.JButton();
 
-        setLayout(new java.awt.GridLayout());
+        setLayout(new java.awt.GridLayout(1, 0));
 
         jLabelName.setText("Name");
         add(jLabelName);
 
         jButtonBuy.setText("Buy");
+        jButtonBuy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBuyActionPerformed(evt);
+            }
+        });
         add(jButtonBuy);
 
         jLabelWishPrice.setText("Wish Price");
@@ -48,6 +69,14 @@ public class RMIStoreClientBuyItem extends javax.swing.JPanel {
         jButtonWish.setText("Wish");
         add(jButtonWish);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuyActionPerformed
+        try {
+            RMIStoreClientHelper.customerRemoteObj.buyItem(this.item.getCustomerId());
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIStoreClientBuyItem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButtonBuyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -5,11 +5,21 @@
  */
 package rmistoreclient.ui.tabs;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JLabel;
+import static javax.swing.JOptionPane.showMessageDialog;
+import rmistore.commons.interfaces.Item;
+import rmistoreclient.helper.RMIStoreClientHelper;
+import rmistoreclient.interfaces.Callback;
+
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab {
+public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab implements Callback{
 
     /**
      * Creates new form RMIStoreClientBuyPanel
@@ -38,6 +48,7 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab {
         jTextFieldItemName = new javax.swing.JTextField();
         jTextFieldItemPrice = new javax.swing.JTextField();
         jButtonAdd = new javax.swing.JButton();
+        jLabelCurrency = new javax.swing.JLabel();
 
         jPanelItems.setLayout(new java.awt.GridLayout(0, 1));
         jScrollPaneItems.setViewportView(jPanelItems);
@@ -54,6 +65,8 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab {
                 jButtonAddActionPerformed(evt);
             }
         });
+
+        jLabelCurrency.setText("USD");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -73,7 +86,9 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab {
                                 .addComponent(jLabelItemName)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabelCurrency)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
                         .addComponent(jButtonAdd))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelItems)
@@ -100,18 +115,40 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelItemPrice)
-                            .addComponent(jTextFieldItemPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jTextFieldItemPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelCurrency))))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        // TODO add your handling code here:
+        String alert = "";
+        if(jTextFieldItemName.getText().length() <= 0) {
+            alert += "Name must not be empty!\n";
+        }
+        try {
+            Double.valueOf(jTextFieldItemPrice.getText());
+        }
+        catch (NumberFormatException ex) {
+            alert += "Put correct number format!";
+        }
+        if(alert.length() > 0) {
+            showMessageDialog(null, alert);  
+        }
+        else {
+            try {
+                RMIStoreClientHelper.customerRemoteObj.sellItem(jTextFieldItemName.getText(),
+                        Double.valueOf(jTextFieldItemPrice.getText()));
+            } catch (RemoteException ex) {
+                Logger.getLogger(RMIStoreClientSellPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
     }//GEN-LAST:event_jButtonAddActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
+    private javax.swing.JLabel jLabelCurrency;
     private javax.swing.JLabel jLabelItemName;
     private javax.swing.JLabel jLabelItemPrice;
     private javax.swing.JLabel jLabelItems;
@@ -121,4 +158,35 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab {
     private javax.swing.JTextField jTextFieldItemName;
     private javax.swing.JTextField jTextFieldItemPrice;
     // End of variables declaration//GEN-END:variables
+
+    public void refreshItemList() {
+        try {
+            RMIStoreClientHelper.customerRemoteObj.callback = this;
+            ArrayList<Item> items = RMIStoreClientHelper.customerRemoteObj.getUserItems();            
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIStoreClientSellPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public synchronized void doCallback(Object arguments) {
+        if(arguments != null && arguments.getClass() == ArrayList.class) {
+            ArrayList<Item> items = (ArrayList<Item>) arguments;
+            
+            jPanelItems.removeAll();
+            for(Item item : items) {
+                System.out.println(item.getName());
+                jPanelItems.add(new JLabel(item.getName()));
+            }
+            
+            jPanelItems.revalidate();
+            jPanelItems.repaint();
+        }
+        else if(arguments != null && arguments.getClass() == String.class) {
+            String argumentsString = (String) arguments;
+            if(argumentsString.equals("sellItem")) {
+                refreshItemList();
+            }
+        }
+    }
 }

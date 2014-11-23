@@ -124,4 +124,14 @@ implements rmistore.commons.interfaces.ServerRemote {
         wishList.add(wishObj);
         wishHash.put(name,wishList);
     }
+
+    ArrayList<Item> getOtherItems(int customerId) {
+        ArrayList<Item> items=new ArrayList<>();
+        for(int key:itemHash.keySet()){
+            if(itemHash.get(key).getCustomerId() != customerId){
+                items.add(itemHash.get(key));
+            }
+        }
+        return items;
+    }
 }

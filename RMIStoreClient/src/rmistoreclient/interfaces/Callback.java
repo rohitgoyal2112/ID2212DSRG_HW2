@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rmistoreserver.helper;
+package rmistoreclient.interfaces;
 
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreServerHelper {
-    
-    public static String RMIStoreName = "//localhost:1100/RMIStore";
-    
+public interface Callback {
+    public void doCallback(Object arguments);
 }

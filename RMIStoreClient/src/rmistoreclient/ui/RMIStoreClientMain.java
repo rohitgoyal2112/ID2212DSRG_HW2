@@ -5,6 +5,7 @@
  */
 package rmistoreclient.ui;
 
+import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.ui.tabs.RMIStoreClientAccountPanel;
 import rmistoreclient.ui.tabs.RMIStoreClientBuyPanel;
 import rmistoreclient.ui.tabs.RMIStoreClientSellPanel;
@@ -18,12 +19,16 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
     private javax.swing.JFrame caller;
     private String username;
     
+    private RMIStoreClientBuyPanel buyTab;
+    private RMIStoreClientSellPanel sellTab;
+    
     /**
      * Creates new form RMIStoreClientMain
      */
     public RMIStoreClientMain() {
         initComponents();
-        initTabs();
+        initTabs();        
+        
     }
     
     public RMIStoreClientMain(javax.swing.JFrame caller, String username) {
@@ -35,6 +40,7 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
         initComponents();
         initGUI();
         initTabs();
+
     }
 
     /**
@@ -48,9 +54,15 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
 
         jTabbedPaneMain = new javax.swing.JTabbedPane();
         jLabelGreetings = new javax.swing.JLabel();
+        jProgressBar = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(800, 600));
+
+        jTabbedPaneMain.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPaneMainStateChanged(evt);
+            }
+        });
 
         jLabelGreetings.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabelGreetings.setText("Hi, !");
@@ -61,7 +73,9 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jLabelGreetings, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
+                .addComponent(jLabelGreetings, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -73,7 +87,9 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelGreetings, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelGreetings, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(305, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -84,6 +100,15 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jTabbedPaneMainStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPaneMainStateChanged
+        if(jTabbedPaneMain.getSelectedComponent() == buyTab) {
+            buyTab.refreshItemList();
+        }
+        else if(jTabbedPaneMain.getSelectedComponent() == sellTab) {
+            sellTab.refreshItemList();
+        }
+    }//GEN-LAST:event_jTabbedPaneMainStateChanged
 
     /**
      * @param args the command line arguments
@@ -122,6 +147,7 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabelGreetings;
+    private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JTabbedPane jTabbedPaneMain;
     // End of variables declaration//GEN-END:variables
 
@@ -130,18 +156,19 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
     }
     
     private void initTabs() {
+        RMIStoreClientHelper.customerRemoteObj.setLoader(jProgressBar);
+
         // Init buy tab
-        RMIStoreClientBuyPanel buyTab = new RMIStoreClientBuyPanel();
+        buyTab = new RMIStoreClientBuyPanel();
         jTabbedPaneMain.add(RMIStoreClientBuyPanel.tabName, buyTab);
 
         // Init sell tab
-        RMIStoreClientSellPanel sellTab = new RMIStoreClientSellPanel();
+        sellTab = new RMIStoreClientSellPanel();
         jTabbedPaneMain.add(RMIStoreClientSellPanel.tabName, sellTab);
 
         // Init account tab
         RMIStoreClientAccountPanel accountTab = new RMIStoreClientAccountPanel();
         jTabbedPaneMain.add(RMIStoreClientAccountPanel.tabName, accountTab);
-
     }
 
 }
