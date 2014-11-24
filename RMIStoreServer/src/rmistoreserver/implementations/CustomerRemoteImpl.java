@@ -41,9 +41,7 @@ implements rmistore.commons.interfaces.CustomerRemote {
     }
     
     public synchronized void buyItem(int itemId)throws Rejected,RemoteException{
-        //check if user has sufficient balance
-        if(this.serverRemoteObj.buyItem(itemId)==true){
-            //debit money
+        if(this.serverRemoteObj.buyItem(myId,itemId)==true){
             this.serverRemoteObj.getClientObj(myId).receiveMessage("You bought!");
         }
         else{

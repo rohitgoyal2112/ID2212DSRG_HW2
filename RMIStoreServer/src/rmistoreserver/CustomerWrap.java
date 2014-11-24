@@ -20,4 +20,8 @@ public class CustomerWrap {
     public  ClientRemote getClientRemoteObj(){
         return clientRemoteObj;
     }
+    public String getName(){
+        return name;
+    }
+    
 }

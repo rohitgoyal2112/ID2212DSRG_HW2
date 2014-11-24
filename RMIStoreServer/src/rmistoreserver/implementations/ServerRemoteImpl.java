@@ -11,10 +11,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import rmistore.commons.exceptions.Rejected;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistore.commons.interfaces.Item;
 import rmistoreserver.CustomerWrap;
 import rmistoreserver.Wish;
+import rmistore.commons.interfaces.Bank;
 /**
  *
  * @author davidsoendoro
@@ -23,6 +25,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject
 implements rmistore.commons.interfaces.ServerRemote {
     int itemId=200;
     int customerId=1;
+    Bank bankRMIObj;
     HashMap<Integer, Item> itemHash= new HashMap<>();
     HashMap<Integer,CustomerWrap> customerHash=new HashMap<>();
     HashMap<String, ArrayList<Wish>> wishHash=new HashMap<>();
@@ -77,22 +80,32 @@ implements rmistore.commons.interfaces.ServerRemote {
        return true;
     }
     
-    public synchronized boolean buyItem(int itemId){
+    public synchronized boolean buyItem(int customerId, int itemId){
+        try{
         if(itemHash.get(itemId)!=null){
+            if(bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance()>=itemHash.get(itemId).getPrice()){
             Item item= itemHash.remove(itemId);
-            //credit
-            try{
-                this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName());
-                
-                this.getClientObj(item.getCustomerId()).updateBalance(500);
-            }
-            catch(RemoteException r){
-             
-            }
+            //credit to seller and debit to buyer
+                this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName()); 
+                bankRMIObj.getAccount(customerHash.get(item.getCustomerId()).getName()).deposit((float)item.getPrice());
+                bankRMIObj.getAccount(customerHash.get(customerId).getName()).withdraw((float)item.getPrice());
             return true;
         }
-        else
+            else{
+                this.getClientObj(customerId).receiveMessage("Insufficient balance");
+                return false;
+            }
+                
+        }
+        else{
+           this.getClientObj(customerId).receiveMessage("Item is not available"); 
            return false;
+        }
+        }
+        catch(RemoteException ex){
+            System.out.println("Remote Exception: "+ ex);
+            return false;
+        }
     }
     public ClientRemote getClientObj(int customerId){
         return customerHash.get(customerId).getClientRemoteObj();

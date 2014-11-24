@@ -1,1 +1,4 @@
 /RMIStoreClient/build/
+/RMIStoreBank/dist/
+/RMIStoreServer/dist/
+/RMIStoreClient/dist/
