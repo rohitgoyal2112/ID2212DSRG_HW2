@@ -168,4 +168,14 @@ implements rmistore.commons.interfaces.ServerRemote {
         }
         return items;
     }
+    
+    public double checkCustomerBalance(int customerId){
+        try{
+        return bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance();
+        }
+        catch(RemoteException r){
+            System.out.println("Exception: "+r);
+        }
+        return 0;
+    }
 }
