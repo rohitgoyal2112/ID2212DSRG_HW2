@@ -25,10 +25,10 @@ public class RMIStoreBank {
         try{
         try {
             Runtime.getRuntime().exec("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false");
-            LocateRegistry.getRegistry(1099).list();
+            LocateRegistry.getRegistry(1100).list();
         } catch ( IOException ex) {
             System.out.println("exception is :"+ex);
-            LocateRegistry.createRegistry(1099);
+            LocateRegistry.createRegistry(1100);
             System.out.println("Created registry");
         }
         }

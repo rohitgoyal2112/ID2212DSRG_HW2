@@ -6,6 +6,9 @@
 package rmistoreserver.implementations;
 
 import java.lang.reflect.Array;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -37,12 +40,27 @@ implements rmistore.commons.interfaces.ServerRemote {
             rmistore.commons.interfaces.ClientRemote clientRemote) 
             throws RemoteException, rmistore.commons.exceptions.Rejected {
         int id=this.getCustomerId();
+        //check uniqueness of name
+        for(int key:customerHash.keySet()){
+            if(customerHash.get(key).getName().equals(name)){
+                throw new Rejected("Name already in use");
+            }
+        }
         customerHash.put(id,new CustomerWrap(name, clientRemote));
         rmistore.commons.interfaces.CustomerRemote client = new CustomerRemoteImpl(id,this);
-        
+        //open account
+        bankRMIObj.newAccount(name);
+        //credit initial balance
+        bankRMIObj.getAccount(name).deposit(200);
         System.out.println("Register called! " + name);
         clientRemote.receiveMessage("Hello World!");
-        
+        try{
+        bankRMIObj=(Bank)Naming.lookup("//localhost:1100/Nordea");
+        }
+        catch(NotBoundException|MalformedURLException ex)
+        {
+            System.out.println("Exception: "+ex);
+        }
         return client;
     }
     

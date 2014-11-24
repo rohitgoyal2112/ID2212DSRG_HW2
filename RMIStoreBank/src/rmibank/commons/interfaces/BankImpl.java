@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import rmistore.commons.exceptions.Rejected;
 
+
 @SuppressWarnings("serial")
 public class BankImpl extends UnicastRemoteObject implements Bank {
     private String bankName;

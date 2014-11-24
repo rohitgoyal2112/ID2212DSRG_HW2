@@ -3,7 +3,6 @@ package rmibank.commons.interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import rmistore.commons.exceptions.Rejected;
-
 public interface Account extends Remote {
     public float getBalance() throws RemoteException;
 
