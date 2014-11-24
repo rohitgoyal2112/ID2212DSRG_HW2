@@ -6,7 +6,7 @@ import rmistore.commons.exceptions.Rejected;
 
 @SuppressWarnings("serial")
 public class AccountImpl extends UnicastRemoteObject implements Account {
-    private float balance = 0;
+    private double balance = 0;
     private String name;
 
     /**
@@ -44,7 +44,7 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
     }
 
     @Override
-    public synchronized float getBalance() throws RemoteException {
+    public synchronized double getBalance() throws RemoteException {
         return balance;
     }
 }
