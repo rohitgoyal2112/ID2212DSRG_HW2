@@ -103,7 +103,7 @@ implements rmistore.commons.interfaces.ServerRemote {
         try{
         if(itemHash.get(itemId)!=null){
             if(bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance()>=itemHash.get(itemId).getPrice()){
-            Item item= itemHash.remove(itemId);
+            Item item= itemHash.get(itemId);
             //credit to seller and debit to buyer
                 this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName()); 
                 bankRMIObj.getAccount(customerHash.get(item.getCustomerId()).getName()).deposit((float)item.getPrice());
