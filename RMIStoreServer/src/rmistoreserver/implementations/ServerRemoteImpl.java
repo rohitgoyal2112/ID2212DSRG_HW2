@@ -32,6 +32,7 @@ implements rmistore.commons.interfaces.ServerRemote {
     HashMap<Integer, Item> itemHash= new HashMap<>();
     HashMap<Integer,CustomerWrap> customerHash=new HashMap<>();
     HashMap<String, ArrayList<Wish>> wishHash=new HashMap<>();
+
     public ServerRemoteImpl(Bank bankRMIObj) throws RemoteException {
         this.bankRMIObj = bankRMIObj;
     }
@@ -55,13 +56,6 @@ implements rmistore.commons.interfaces.ServerRemote {
         bankRMIObj.getAccount(name).deposit(200);
         System.out.println("Register called! " + name);
         clientRemote.receiveMessage("Hello World!");
-        try{
-        bankRMIObj=(Bank)Naming.lookup("//localhost:1100/Nordea");
-        }
-        catch(NotBoundException|MalformedURLException ex)
-        {
-            System.out.println("Exception: "+ex);
-        }
         return client;
     }
     

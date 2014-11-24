@@ -5,13 +5,18 @@
  */
 package rmistoreclient.ui.tabs;
 
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.interfaces.BalanceDisplayer;
+import rmistoreclient.interfaces.Callback;
 
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab implements BalanceDisplayer {
+public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab implements BalanceDisplayer, Callback {
 
     /**
      * Creates new form RMIStoreClientBuyPanel
@@ -67,5 +72,21 @@ public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab impleme
     @Override
     public void displayBalance(double balance) {
         jLabelBalanceValue.setText(" $" + balance);
+    }
+
+    public void refreshBalance() {
+        try {
+            RMIStoreClientHelper.customerRemoteObj.callback = this;
+            RMIStoreClientHelper.customerRemoteObj.checkBalance();
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIStoreClientAccountPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void doCallback(Object arguments) {
+        if(arguments != null && arguments.getClass() == Double.class) {
+            jLabelBalanceValue.setText(" $" + arguments);
+        }
     }
 }

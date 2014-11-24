@@ -8,8 +8,6 @@ package rmistoreserver.implementations;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import rmistore.commons.exceptions.Rejected;
 import rmistore.commons.interfaces.Item;
 import rmistoreserver.Wish;
@@ -27,6 +25,7 @@ implements rmistore.commons.interfaces.CustomerRemote {
         this.serverRemoteObj=serverRemoteObj;
     }
 
+    @Override
     public synchronized void sellItem(String itemName, double price) throws Rejected,RemoteException{
         int id=serverRemoteObj.getItemId();
         Item item=new Item(id,this.myId,itemName,price);
@@ -40,6 +39,7 @@ implements rmistore.commons.interfaces.CustomerRemote {
             
     }
     
+    @Override
     public synchronized void buyItem(int itemId)throws Rejected,RemoteException{
         if(this.serverRemoteObj.buyItem(myId,itemId)==true){
             this.serverRemoteObj.getClientObj(myId).receiveMessage("You bought!");
@@ -48,18 +48,22 @@ implements rmistore.commons.interfaces.CustomerRemote {
             this.serverRemoteObj.getClientObj(myId).receiveMessage("You could not buy!");
         } 
     }
+    @Override
     public synchronized void wishItem(String name, double price)throws Rejected,RemoteException {
         this.serverRemoteObj.wishItemForCustomer(name, new Wish(myId,price));
     }
 
+    @Override
     public synchronized ArrayList<Item> getOtherItems()throws Rejected,RemoteException {
         return this.serverRemoteObj.getOtherItems(myId);
     }
     
+    @Override
     public synchronized ArrayList<Item> getUserItems()throws Rejected,RemoteException {
         return this.serverRemoteObj.getUserItemsFromHash(myId);
     }
 
+    @Override
     public synchronized boolean unRegister()throws Rejected,RemoteException{
         this.serverRemoteObj.unregister(myId);
         return true; 
@@ -70,6 +74,7 @@ implements rmistore.commons.interfaces.CustomerRemote {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    @Override
     public double checkBalance(){
         return this.serverRemoteObj.checkCustomerBalance(myId);
     }

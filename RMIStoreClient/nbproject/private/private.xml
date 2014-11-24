@@ -2,14 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="2">
         <file>
-            <url>src/rmistoreclient/ui/tabs/RMIStoreClientSellPanel.java</url>
-            <bookmark id="1">
-                <name/>
-                <line>124</line>
-                <key/>
-            </bookmark>
-        </file>
-        <file>
             <url>src/rmistoreclient/ui/RMIStoreClientMain.java</url>
             <bookmark id="2">
                 <name/>
@@ -17,21 +9,19 @@
                 <key/>
             </bookmark>
         </file>
+        <file>
+            <url>src/rmistoreclient/ui/tabs/RMIStoreClientSellPanel.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>124</line>
+                <key/>
+            </bookmark>
+        </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/implementations/ClientRemoteImpl.java</file>
             <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/implementations/CustomerRemoteThreadImpl.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/RMIStoreClientMain.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/tabs/RMIStoreClientGenericTab.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/RMIStoreClientRegister.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/tabs/items/RMIStoreClientBuyItem.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/tabs/RMIStoreClientAccountPanel.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistore/commons/interfaces/ServerRemote.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistore/commons/interfaces/Item.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/tabs/RMIStoreClientBuyPanel.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/tabs/items/RMIStoreClientSellItem.java</file>
-            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistoreclient/ui/tabs/RMIStoreClientSellPanel.java</file>
+            <file>file:/Users/davidsoendoro/ID2212DSRG_HW2/RMIStoreClient/src/rmistore/commons/interfaces/CustomerRemote.java</file>
         </group>
     </open-files>
 </project-private>

@@ -11,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.swing.JOptionPane.showMessageDialog;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistore.commons.interfaces.CustomerRemote;
 import rmistore.commons.interfaces.ServerRemote;
@@ -168,6 +169,8 @@ public class RMIStoreClientRegister extends javax.swing.JFrame {
                 }
             }
             catch (RemoteException | NotBoundException | MalformedURLException ex) {
+                showMessageDialog(null, ex.getMessage());
+                
                 Logger.getLogger(RMIStoreClientRegister.class.getName()).
                         log(Level.SEVERE, null, ex);
             }

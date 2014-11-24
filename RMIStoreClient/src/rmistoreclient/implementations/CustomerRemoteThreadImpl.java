@@ -171,6 +171,30 @@ public class CustomerRemoteThreadImpl implements CustomerRemote {
     }
 
     @Override
+    public double checkBalance() throws RemoteException {
+        if(!isCalling) {
+            new Thread() {
+
+                @Override
+                public void run() {
+                    try {
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
+                        isCalling = true;
+                        double returnValue = customerRemoteObj.checkBalance();
+                        isCalling = false;
+                        callback.doCallback(returnValue);
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+            }.start();
+        }
+        return 0;
+    }
+    
+    @Override
     public boolean unRegister() throws Rejected, RemoteException {
         new Thread() {
 

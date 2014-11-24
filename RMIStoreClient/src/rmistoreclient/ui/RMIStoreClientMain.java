@@ -22,6 +22,7 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
     
     private RMIStoreClientBuyPanel buyTab;
     private RMIStoreClientSellPanel sellTab;
+    private RMIStoreClientAccountPanel accountTab;
     
     /**
      * Creates new form RMIStoreClientMain
@@ -109,6 +110,9 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
         else if(jTabbedPaneMain.getSelectedComponent() == sellTab) {
             sellTab.refreshItemList();
         }
+        else if(jTabbedPaneMain.getSelectedComponent() == accountTab) {
+            accountTab.refreshBalance();
+        }
     }//GEN-LAST:event_jTabbedPaneMainStateChanged
 
     /**
@@ -168,7 +172,7 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
         jTabbedPaneMain.add(RMIStoreClientSellPanel.tabName, sellTab);
 
         // Init account tab
-        RMIStoreClientAccountPanel accountTab = new RMIStoreClientAccountPanel();
+        accountTab = new RMIStoreClientAccountPanel();
         jTabbedPaneMain.add(RMIStoreClientAccountPanel.tabName, accountTab);
         
         ClientRemoteImpl clientRemoteImpl = (ClientRemoteImpl) 

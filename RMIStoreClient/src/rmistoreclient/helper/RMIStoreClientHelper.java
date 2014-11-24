@@ -5,6 +5,7 @@
  */
 package rmistoreclient.helper;
 
+import javax.swing.JFrame;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistoreclient.implementations.CustomerRemoteThreadImpl;
 
@@ -25,4 +26,5 @@ public class RMIStoreClientHelper {
  
     public static CustomerRemoteThreadImpl customerRemoteObj;
     public static ClientRemote clientRemoteObj;
+    public static JFrame currentFrame;
 }
