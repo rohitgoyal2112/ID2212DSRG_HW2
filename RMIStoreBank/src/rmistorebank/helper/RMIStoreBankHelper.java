@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rmistoreserver.helper;
+package rmistorebank.helper;
 
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreServerHelper {
-    
-    public static final String RMIStoreName = "//localhost:1100/RMIStore";
+public class RMIStoreBankHelper {
     public static final String RMIBankName = "//localhost:1101/RMIStoreBank";
-    
 }

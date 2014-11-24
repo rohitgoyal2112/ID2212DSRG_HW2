@@ -32,7 +32,8 @@ implements rmistore.commons.interfaces.ServerRemote {
     HashMap<Integer, Item> itemHash= new HashMap<>();
     HashMap<Integer,CustomerWrap> customerHash=new HashMap<>();
     HashMap<String, ArrayList<Wish>> wishHash=new HashMap<>();
-    public ServerRemoteImpl(String RMIStoreName) throws RemoteException {
+    public ServerRemoteImpl(Bank bankRMIObj) throws RemoteException {
+        this.bankRMIObj = bankRMIObj;
     }
 
     @Override

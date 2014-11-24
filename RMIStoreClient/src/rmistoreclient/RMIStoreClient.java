@@ -5,14 +5,6 @@
  */
 package rmistoreclient;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import rmistore.commons.interfaces.ServerRemote;
-import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.ui.RMIStoreClientRegister;
 
 /**

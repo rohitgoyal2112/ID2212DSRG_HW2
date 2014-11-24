@@ -8,11 +8,12 @@ package rmistoreserver;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rmistore.commons.interfaces.Bank;
 import rmistoreserver.helper.RMIStoreServerHelper;
 import rmistoreserver.implementations.ServerRemoteImpl;
 import rmistore.commons.interfaces.ServerRemote;
@@ -24,19 +25,24 @@ import rmistore.commons.interfaces.ServerRemote;
 public class RMIStoreServer extends Thread {
     public RMIStoreServer(String[] args) {
         try {
-            Runtime.getRuntime().exec("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false");
-            LocateRegistry.createRegistry(1100);
-            LocateRegistry.getRegistry();
-        } catch (IOException ex) {
-            System.out.println("Port already opened!");
-        }
+            // Connect to Bank
+            Bank rmiBankObj = (Bank)Naming.lookup(
+                    RMIStoreServerHelper.RMIBankName);
+            // Open connection to Client
+            try {
+                Runtime.getRuntime().exec("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false");
+                LocateRegistry.createRegistry(1100);
+                LocateRegistry.getRegistry();
+            } catch (IOException ex) {
+                System.out.println("Port already opened!");
+            }
             
-        try {            
-            ServerRemote rmistoreObj = new ServerRemoteImpl(RMIStoreServerHelper.RMIStoreName);
+            ServerRemote rmistoreObj = new ServerRemoteImpl(rmiBankObj);
             Naming.rebind(RMIStoreServerHelper.RMIStoreName, rmistoreObj);
-        } catch (RemoteException | MalformedURLException ex) {
+            
+        } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             Logger.getLogger(RMIStoreServer.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
     }
     
     /**

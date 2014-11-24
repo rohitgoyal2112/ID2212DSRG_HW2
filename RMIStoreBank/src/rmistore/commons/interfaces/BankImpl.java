@@ -1,4 +1,4 @@
-package rmibank.commons.interfaces;
+package rmistore.commons.interfaces;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -13,7 +13,7 @@ public class BankImpl extends UnicastRemoteObject implements Bank {
     private Map<String, Account> accounts = new HashMap<>();
 
     public BankImpl(String bankName) throws RemoteException {
-        super();
+//        super();
         this.bankName = bankName;
     }
 

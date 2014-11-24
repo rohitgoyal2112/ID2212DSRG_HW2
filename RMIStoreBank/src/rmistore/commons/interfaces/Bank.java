@@ -1,4 +1,4 @@
-package rmibank.commons.interfaces;
+package rmistore.commons.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

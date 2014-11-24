@@ -12,43 +12,39 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rmibank.commons.interfaces.Bank;
-import rmibank.commons.interfaces.BankImpl;
+import rmistore.commons.interfaces.Bank;
+import rmistore.commons.interfaces.BankImpl;
+import rmistorebank.helper.RMIStoreBankHelper;
 
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreBank {
+public class RMIStoreBank extends Thread {
 
     public RMIStoreBank(String[] args){
-        try{
+        
         try {
             Runtime.getRuntime().exec("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false");
-            LocateRegistry.getRegistry(1100).list();
-        } catch ( IOException ex) {
-            System.out.println("exception is :"+ex);
-            LocateRegistry.createRegistry(1100);
-            System.out.println("Created registry");
+            LocateRegistry.createRegistry(1101);
+            LocateRegistry.getRegistry();
+        } catch (IOException ex) {
+            System.out.println("Port already opened!");
         }
-        }
-        catch(RemoteException ex){
-            System.out.println("exception "+ex);
-        }
+
         try {            
-            Bank rmiBankObj = new BankImpl("Nordea");
-            Naming.rebind("Nordea", rmiBankObj);
+            Bank rmiBankObj = new BankImpl(RMIStoreBankHelper.RMIBankName);
+            Naming.rebind(RMIStoreBankHelper.RMIBankName, rmiBankObj);
         } catch (RemoteException | MalformedURLException ex) {
-          //  Logger.getLogger(RMIStoreServer.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Exception here:"+ex);
-        } 
+            Logger.getLogger(RMIStoreBank.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        RMIStoreBank rMIStoreBank= new RMIStoreBank(args);
+        new RMIStoreBank(args).run();
     }
     
 }
