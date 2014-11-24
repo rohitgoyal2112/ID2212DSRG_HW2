@@ -24,27 +24,17 @@
         <Property name="text" type="java.lang.String" value="Name"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButtonBuy">
+    <Component class="javax.swing.JLabel" name="jLabelPrice">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Buy"/>
+        <Property name="text" type="java.lang.String" value="$0.00"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButtonRemove">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonBuyActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelWishPrice">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Wish Price"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="jTextFieldWishPrice">
-    </Component>
-    <Component class="javax.swing.JButton" name="jButtonWish">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Wish"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonWishActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonRemoveActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

@@ -8,6 +8,7 @@ package rmistoreclient.implementations;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import rmistore.commons.interfaces.CustomerRemote;
+import rmistoreclient.interfaces.BalanceDisplayer;
 
 /**
  *
@@ -16,7 +17,17 @@ import rmistore.commons.interfaces.CustomerRemote;
 public class ClientRemoteImpl extends UnicastRemoteObject 
 implements rmistore.commons.interfaces.ClientRemote {
 
+    private BalanceDisplayer balanceDisplayer;
+    
     public ClientRemoteImpl() throws RemoteException {
+    }
+
+    public BalanceDisplayer getBalanceDisplayer() {
+        return balanceDisplayer;
+    }
+
+    public void setBalanceDisplayer(BalanceDisplayer balanceDisplayer) {
+        this.balanceDisplayer = balanceDisplayer;
     }
 
     @Override
@@ -24,6 +35,11 @@ implements rmistore.commons.interfaces.ClientRemote {
         System.out.println(message);
         
         return true;
+    }
+
+    @Override
+    public void updateBalance(double balance) throws RemoteException {
+        balanceDisplayer.displayBalance(balance);
     }
     
 }

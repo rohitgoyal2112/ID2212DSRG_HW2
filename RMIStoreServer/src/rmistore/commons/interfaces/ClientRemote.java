@@ -15,4 +15,7 @@ import java.rmi.RemoteException;
 public interface ClientRemote extends Remote {
     public boolean receiveMessage(String message)
           throws RemoteException;
+    
+    public void updateBalance(double balance)
+            throws RemoteException;
 }

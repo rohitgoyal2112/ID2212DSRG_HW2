@@ -6,6 +6,7 @@
 package rmistoreclient.ui;
 
 import rmistoreclient.helper.RMIStoreClientHelper;
+import rmistoreclient.implementations.ClientRemoteImpl;
 import rmistoreclient.ui.tabs.RMIStoreClientAccountPanel;
 import rmistoreclient.ui.tabs.RMIStoreClientBuyPanel;
 import rmistoreclient.ui.tabs.RMIStoreClientSellPanel;
@@ -169,6 +170,10 @@ public class RMIStoreClientMain extends javax.swing.JFrame {
         // Init account tab
         RMIStoreClientAccountPanel accountTab = new RMIStoreClientAccountPanel();
         jTabbedPaneMain.add(RMIStoreClientAccountPanel.tabName, accountTab);
+        
+        ClientRemoteImpl clientRemoteImpl = (ClientRemoteImpl) 
+                RMIStoreClientHelper.clientRemoteObj;
+        clientRemoteImpl.setBalanceDisplayer(accountTab);
     }
 
 }

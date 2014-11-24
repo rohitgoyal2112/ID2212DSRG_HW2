@@ -33,53 +33,93 @@ public class CustomerRemoteThreadImpl implements CustomerRemote {
 
     @Override
     public void sellItem(final String itemName, final double price) throws Rejected, RemoteException {
-        new Thread() {
+        if(!isCalling) {
+            new Thread() {
 
-            @Override
-            public void run() {
-                try {
-                    customerRemoteObj.sellItem(itemName, price);
-                    callback.doCallback("sellItem");
-                } catch (RemoteException ex) {
-                    Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                @Override
+                public void run() {
+                    try {
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
+                        isCalling = true;
+                        customerRemoteObj.sellItem(itemName, price);
+                        isCalling = false;
+                        callback.doCallback("sellItem");
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
-            
-        }.start();
+
+            }.start();
+        }
+    }
+
+    @Override
+    public synchronized void removeItem(final int itemId) throws Rejected, RemoteException {
+        if(!isCalling) {
+            new Thread() {
+
+                @Override
+                public void run() {
+                    try {
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
+                        isCalling = true;
+                        customerRemoteObj.removeItem(itemId);
+                        isCalling = false;
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+            }.start();
+        }
     }
 
     @Override
     public void buyItem(final int itemId) throws Rejected, RemoteException {
-        new Thread() {
+        if(!isCalling) {
+            new Thread() {
 
-            @Override
-            public void run() {
-                try {
-                    customerRemoteObj.buyItem(itemId);
-                    callback.doCallback(null);
-                } catch (RemoteException ex) {
-                    Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                @Override
+                public void run() {
+                    try {
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
+                        isCalling = true;
+                        customerRemoteObj.buyItem(itemId);
+                        isCalling = false;
+                        callback.doCallback(null);
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
-            
-        }.start();
+
+            }.start();
+        }
     }
 
     @Override
     public void wishItem(final String name, final double price) throws Rejected, RemoteException {
-        new Thread() {
+        if(!isCalling) {
+            new Thread() {
 
-            @Override
-            public void run() {
-                try {
-                    customerRemoteObj.wishItem(name, price);
-                    callback.doCallback(null);
-                } catch (RemoteException ex) {
-                    Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                @Override
+                public void run() {
+                    try {
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
+                        isCalling = true;
+                        customerRemoteObj.wishItem(name, price);
+                        isCalling = false;
+                        callback.doCallback(null);
+                        RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }
-            
-        }.start();
+
+            }.start();
+        }
     }
 
     @Override
@@ -93,8 +133,8 @@ public class CustomerRemoteThreadImpl implements CustomerRemote {
                         RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
                         isCalling = true;
                         ArrayList<Item> returnItem = customerRemoteObj.getOtherItems();
-                        callback.doCallback(returnItem);
                         isCalling = false;
+                        callback.doCallback(returnItem);
                         RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
                     } catch (RemoteException ex) {
                         Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,8 +157,8 @@ public class CustomerRemoteThreadImpl implements CustomerRemote {
                         RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(true);
                         isCalling = true;
                         ArrayList<Item> returnItem = customerRemoteObj.getUserItems();
-                        callback.doCallback(returnItem);
                         isCalling = false;
+                        callback.doCallback(returnItem);
                         RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
                     } catch (RemoteException ex) {
                         Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);

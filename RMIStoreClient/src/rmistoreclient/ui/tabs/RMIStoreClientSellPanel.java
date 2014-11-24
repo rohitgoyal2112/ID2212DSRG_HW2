@@ -9,11 +9,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JLabel;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rmistore.commons.interfaces.Item;
 import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.interfaces.Callback;
+import rmistoreclient.ui.tabs.items.RMIStoreClientSellItem;
 
 /**
  *
@@ -162,7 +162,8 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab implements
     public void refreshItemList() {
         try {
             RMIStoreClientHelper.customerRemoteObj.callback = this;
-            ArrayList<Item> items = RMIStoreClientHelper.customerRemoteObj.getUserItems();            
+            RMIStoreClientHelper.customerRemoteObj.getUserItems();          
+            System.out.println("Called");
         } catch (RemoteException ex) {
             Logger.getLogger(RMIStoreClientSellPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -171,12 +172,12 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab implements
     @Override
     public synchronized void doCallback(Object arguments) {
         if(arguments != null && arguments.getClass() == ArrayList.class) {
+            System.out.println("Listed");
             ArrayList<Item> items = (ArrayList<Item>) arguments;
             
             jPanelItems.removeAll();
             for(Item item : items) {
-                System.out.println(item.getName());
-                jPanelItems.add(new JLabel(item.getName()));
+                jPanelItems.add(new RMIStoreClientSellItem(item));
             }
             
             jPanelItems.revalidate();
@@ -185,6 +186,7 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab implements
         else if(arguments != null && arguments.getClass() == String.class) {
             String argumentsString = (String) arguments;
             if(argumentsString.equals("sellItem")) {
+                System.out.println("Calling");
                 refreshItemList();
             }
         }

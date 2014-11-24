@@ -5,11 +5,13 @@
  */
 package rmistoreclient.ui.tabs;
 
+import rmistoreclient.interfaces.BalanceDisplayer;
+
 /**
  *
  * @author davidsoendoro
  */
-public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab {
+public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab implements BalanceDisplayer {
 
     /**
      * Creates new form RMIStoreClientBuyPanel
@@ -61,4 +63,9 @@ public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab {
     private javax.swing.JLabel jLabelBalance;
     private javax.swing.JLabel jLabelBalanceValue;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void displayBalance(double balance) {
+        jLabelBalanceValue.setText(" $" + balance);
+    }
 }

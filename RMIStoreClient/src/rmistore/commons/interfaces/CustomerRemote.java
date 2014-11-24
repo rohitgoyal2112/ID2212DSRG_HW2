@@ -15,6 +15,7 @@ import java.util.ArrayList;
  */
 public interface CustomerRemote extends Remote{
     public void sellItem(String itemName, double price) throws Rejected,RemoteException;
+    public void removeItem(int itemId) throws Rejected,RemoteException;
     public void buyItem(int itemId)throws Rejected,RemoteException;
     public void wishItem(String name, double price)throws Rejected,RemoteException;
     public ArrayList<Item> getOtherItems()throws Rejected,RemoteException;

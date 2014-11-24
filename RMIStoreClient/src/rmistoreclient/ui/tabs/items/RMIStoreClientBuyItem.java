@@ -8,6 +8,7 @@ package rmistoreclient.ui.tabs.items;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.swing.JOptionPane.showMessageDialog;
 import rmistore.commons.interfaces.Item;
 import rmistoreclient.helper.RMIStoreClientHelper;
 
@@ -67,16 +68,42 @@ public class RMIStoreClientBuyItem extends javax.swing.JPanel {
         add(jTextFieldWishPrice);
 
         jButtonWish.setText("Wish");
+        jButtonWish.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonWishActionPerformed(evt);
+            }
+        });
         add(jButtonWish);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuyActionPerformed
         try {
-            RMIStoreClientHelper.customerRemoteObj.buyItem(this.item.getCustomerId());
+            RMIStoreClientHelper.customerRemoteObj.buyItem(this.item.getItemId());
         } catch (RemoteException ex) {
             Logger.getLogger(RMIStoreClientBuyItem.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonBuyActionPerformed
+
+    private void jButtonWishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonWishActionPerformed
+        String alert = "";
+        try {
+            Double.valueOf(jTextFieldWishPrice.getText());
+        }
+        catch (NumberFormatException ex) {
+            alert += "Put correct number format!";
+        }
+        if(alert.length() > 0) {
+            showMessageDialog(null, alert);  
+        }
+        else {
+            try {
+                RMIStoreClientHelper.customerRemoteObj.wishItem(this.item.getName(), 
+                        Double.parseDouble(jTextFieldWishPrice.getText()));
+            } catch (RemoteException ex) {
+                Logger.getLogger(RMIStoreClientBuyItem.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButtonWishActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

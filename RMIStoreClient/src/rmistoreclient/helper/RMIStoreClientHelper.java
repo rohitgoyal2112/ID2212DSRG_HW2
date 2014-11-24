@@ -5,6 +5,7 @@
  */
 package rmistoreclient.helper;
 
+import rmistore.commons.interfaces.ClientRemote;
 import rmistoreclient.implementations.CustomerRemoteThreadImpl;
 
 /**
@@ -23,4 +24,5 @@ public class RMIStoreClientHelper {
     public final static int SELLITEM_COMMAND = 10;
  
     public static CustomerRemoteThreadImpl customerRemoteObj;
+    public static ClientRemote clientRemoteObj;
 }

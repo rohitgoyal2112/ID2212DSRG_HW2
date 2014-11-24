@@ -74,7 +74,6 @@ public class RMIStoreClientBuyPanel extends RMIStoreClientGenericTab implements 
             
             jPanelBuy.removeAll();
             for(Item item : items) {
-                System.out.println(item.getName());
                 jPanelBuy.add(new RMIStoreClientBuyItem(item));
             }
             

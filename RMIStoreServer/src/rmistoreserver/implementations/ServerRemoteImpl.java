@@ -82,7 +82,9 @@ implements rmistore.commons.interfaces.ServerRemote {
             Item item= itemHash.remove(itemId);
             //credit
             try{
-            this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName());
+                this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName());
+                
+                this.getClientObj(item.getCustomerId()).updateBalance(500);
             }
             catch(RemoteException r){
              

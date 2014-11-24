@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistore.commons.interfaces.CustomerRemote;
 import rmistore.commons.interfaces.ServerRemote;
-import rmistoreclient.RMIStoreClient;
 import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.implementations.ClientRemoteImpl;
 import rmistoreclient.implementations.CustomerRemoteThreadImpl;
@@ -154,10 +153,10 @@ public class RMIStoreClientRegister extends javax.swing.JFrame {
                         jButtonRegister.setEnabled(true);
                         break;
                     case RMIStoreClientHelper.REGISTER_COMMAND:
-                        ClientRemote clientRemote = new ClientRemoteImpl();
+                        RMIStoreClientHelper.clientRemoteObj = new ClientRemoteImpl();
                         
                         CustomerRemote customerRemote = rmistoreObj.register(
-                                jTextFieldUsername.getText(), clientRemote);
+                                jTextFieldUsername.getText(), RMIStoreClientHelper.clientRemoteObj);
                         RMIStoreClientHelper.customerRemoteObj = 
                                 new CustomerRemoteThreadImpl(customerRemote);
                         
