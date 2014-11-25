@@ -42,7 +42,7 @@ implements rmistore.commons.interfaces.CustomerRemote {
     @Override
     public synchronized void buyItem(int itemId)throws Rejected,RemoteException{
         if(this.serverRemoteObj.buyItem(myId,itemId)==true){
-            this.serverRemoteObj.getClientObj(myId).receiveMessage("You bought!");
+            this.serverRemoteObj.getClientObj(myId).receiveMessage("Transaction successful. Money debited from your account");
         }
         else{
             this.serverRemoteObj.getClientObj(myId).receiveMessage("You could not buy!");

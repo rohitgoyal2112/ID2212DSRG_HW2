@@ -45,7 +45,7 @@ implements rmistore.commons.interfaces.ServerRemote {
         //check uniqueness of name
         for(int key:customerHash.keySet()){
             if(customerHash.get(key).getName().equals(name)){
-                throw new Rejected("Name already in use");
+                throw new Rejected("Name already in use. Please choose another name.");
             }
         }
         customerHash.put(id,new CustomerWrap(name, clientRemote));
@@ -55,7 +55,7 @@ implements rmistore.commons.interfaces.ServerRemote {
         //credit initial balance
         bankRMIObj.getAccount(name).deposit(200);
         System.out.println("Register called! " + name);
-        clientRemote.receiveMessage("Hello World!");
+        clientRemote.receiveMessage("Welcome!");
         return client;
     }
     
@@ -99,7 +99,7 @@ implements rmistore.commons.interfaces.ServerRemote {
             if(bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance()>=itemHash.get(itemId).getPrice()){
             Item item= itemHash.get(itemId);
             //credit to seller and debit to buyer
-                this.getClientObj(item.getCustomerId()).receiveMessage("Item sold: "+item.getName()); 
+                this.getClientObj(item.getCustomerId()).receiveMessage("Your item "+item.getName()+" sold. Money credited to your account."); 
                 bankRMIObj.getAccount(customerHash.get(item.getCustomerId()).getName()).deposit((float)item.getPrice());
                 bankRMIObj.getAccount(customerHash.get(customerId).getName()).withdraw((float)item.getPrice());
             return true;
