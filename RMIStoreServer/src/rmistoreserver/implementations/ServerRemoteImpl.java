@@ -103,11 +103,13 @@ public class ServerRemoteImpl extends UnicastRemoteObject
             if (itemHash.get(itemId) != null) {
                 if (bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance() >= itemHash.get(itemId).getPrice()) {
                     final Item item = itemHash.get(itemId);
+    
                     //credit to seller and debit to buyer
                     Thread sellNotificationThread = new Thread() {
 
                         @Override
                         public void run() {
+
                             try {
                                 ServerRemoteImpl.this.getClientObj(item.getCustomerId()).receiveMessage("Your item " + item.getName() + " sold. Money credited to your account.");
                             } catch (RemoteException ex) {
@@ -141,7 +143,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject
             System.out.println("Remote Exception: " + ex);
 
             return false;
-        }
+        } 
     }
 
     public ClientRemote getClientObj(int customerId) {
