@@ -55,7 +55,7 @@ implements rmistore.commons.interfaces.ServerRemote {
         //open account
         bankRMIObj.newAccount(name);
         //credit initial balance
-        bankRMIObj.getAccount(name).deposit(200);
+//        bankRMIObj.getAccount(name).deposit(200);
         System.out.println("Register called! " + name);
         clientRemote.receiveMessage("Welcome!");
         return client;
