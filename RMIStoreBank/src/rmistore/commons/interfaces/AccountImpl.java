@@ -2,7 +2,6 @@ package rmistore.commons.interfaces;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import rmistore.commons.exceptions.Rejected;
 
 @SuppressWarnings("serial")
 public class AccountImpl extends UnicastRemoteObject implements Account {
@@ -19,9 +18,9 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
 
     @Override
     public synchronized void deposit(float value) throws RemoteException,
-                                                         Rejected {
+                                                         rmistore.commons.exceptions.Rejected {
         if (value < 0) {
-            throw new Rejected("Rejected: Account " + name + ": Illegal value: " + value);
+            throw new rmistore.commons.exceptions.Rejected("Rejected: Account " + name + ": Illegal value: " + value);
         }
         balance += value;
         System.out.println("Transaction: Account " + name + ": deposit: $" + value + ", balance: $"
@@ -30,12 +29,12 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
 
     @Override
     public synchronized void withdraw(float value) throws RemoteException,
-                                                          Rejected {
+                                                          rmistore.commons.exceptions.Rejected {
         if (value < 0) {
-            throw new Rejected("Rejected: Account " + name + ": Illegal value: " + value);
+            throw new rmistore.commons.exceptions.Rejected("Rejected: Account " + name + ": Illegal value: " + value);
         }
         if ((balance - value) < 0) {
-            throw new Rejected("Rejected: Account " + name
+            throw new rmistore.commons.exceptions.Rejected("Rejected: Account " + name
                                         + ": Negative balance on withdraw: " + (balance - value));
         }
         balance -= value;

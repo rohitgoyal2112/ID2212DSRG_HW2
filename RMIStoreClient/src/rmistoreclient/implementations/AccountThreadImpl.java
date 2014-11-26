@@ -8,6 +8,7 @@ package rmistoreclient.implementations;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import rmistore.commons.exceptions.Rejected;
 import rmistore.commons.interfaces.Account;
@@ -98,8 +99,12 @@ public class AccountThreadImpl implements Account {
                         isCalling = false;
                         callback.doCallback("withdraw");
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(false);
+                    } catch (Rejected ex) {
+                        JOptionPane.showMessageDialog(RMIStoreClientHelper.currentFrame, 
+                                ex.getMessage());
+                        RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(false);
                     } catch (RemoteException ex) {
-                        Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(AccountThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
