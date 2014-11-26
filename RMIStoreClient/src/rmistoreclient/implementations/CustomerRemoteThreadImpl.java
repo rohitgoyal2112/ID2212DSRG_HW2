@@ -66,6 +66,7 @@ public class CustomerRemoteThreadImpl implements CustomerRemote {
                         isCalling = true;
                         customerRemoteObj.removeItem(itemId);
                         isCalling = false;
+                        callback.doCallback("removeItem");
                         RMIStoreClientHelper.customerRemoteObj.getLoader().setIndeterminate(false);
                     } catch (RemoteException ex) {
                         Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);

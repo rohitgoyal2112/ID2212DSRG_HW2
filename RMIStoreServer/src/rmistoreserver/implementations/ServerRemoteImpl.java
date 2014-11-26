@@ -14,6 +14,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import rmistore.commons.exceptions.Rejected;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistore.commons.interfaces.Item;
@@ -79,31 +81,44 @@ implements rmistore.commons.interfaces.ServerRemote {
             if(item.getName().contains(key)==true){
                 for(Wish wishObj:wishHash.get(key)){
                     if(item.getPrice()<=wishObj.getPrice()){
-                        try{
-                        this.getClientObj(wishObj.getCustomerid()).receiveMessage("Item "+ key+ " available for price "+item.getPrice());
-                        }
-                        catch(RemoteException r){
-                                
-                        }
+                        Thread notificationThread = new NotificationThread(wishObj, key, item);
+                        notificationThread.start();
                     }
-                    }
-                
+                }
             }
         }
        return true;
     }
     
+    public synchronized boolean removeItem(int itemId){
+       itemHash.remove(itemId);
+       return true;
+    }
+    
     public synchronized boolean buyItem(int customerId, int itemId){
         try{
-        if(itemHash.get(itemId)!=null){
-            if(bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance()>=itemHash.get(itemId).getPrice()){
-            Item item= itemHash.get(itemId);
-            //credit to seller and debit to buyer
-                this.getClientObj(item.getCustomerId()).receiveMessage("Your item "+item.getName()+" sold. Money credited to your account."); 
+            if(itemHash.get(itemId)!=null){
+                if(bankRMIObj.getAccount(customerHash.get(customerId).getName()).getBalance()>=itemHash.get(itemId).getPrice()){
+                final Item item= itemHash.get(itemId);
+                //credit to seller and debit to buyer
+                Thread sellNotificationThread = new Thread() {
+
+                    @Override
+                    public void run() {
+                        try { 
+                            ServerRemoteImpl.this.getClientObj(item.getCustomerId()).receiveMessage("Your item "+item.getName()+" sold. Money credited to your account.");
+                        } catch (RemoteException ex) {
+                            Logger.getLogger(ServerRemoteImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+
+                };
+                sellNotificationThread.start();
                 bankRMIObj.getAccount(customerHash.get(item.getCustomerId()).getName()).deposit((float)item.getPrice());
                 bankRMIObj.getAccount(customerHash.get(customerId).getName()).withdraw((float)item.getPrice());
-            return true;
-        }
+
+                return true;
+            }
             else{
                 this.getClientObj(customerId).receiveMessage("Insufficient balance");
                 return false;
@@ -151,6 +166,13 @@ implements rmistore.commons.interfaces.ServerRemote {
         }
         wishList.add(wishObj);
         wishHash.put(name,wishList);
+        
+        try { 
+            ServerRemoteImpl.this.getClientObj(wishObj.getCustomerid()).receiveMessage(
+                    "Your wish for "+name+" for $" + wishObj.getPrice() + " has been added!");
+        } catch (RemoteException ex) {
+            Logger.getLogger(ServerRemoteImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     ArrayList<Item> getOtherItems(int customerId) {
@@ -171,5 +193,29 @@ implements rmistore.commons.interfaces.ServerRemote {
             System.out.println("Exception: "+r);
         }
         return 0;
+    }
+    
+    private class NotificationThread extends Thread {
+
+        private final Wish wishObj;
+        private final String key;
+        private final Item item;
+
+        public NotificationThread(Wish wishObj, String key, Item item) {
+            this.wishObj = wishObj;
+            this.key = key;
+            this.item = item;
+        }
+        
+        @Override
+        public void run() {
+            try{
+                ServerRemoteImpl.this.getClientObj(wishObj.getCustomerid()).
+                        receiveMessage("Item "+ key+ " available for price "+item.getPrice());
+            }
+                catch(RemoteException r){
+            }
+        }
+        
     }
 }

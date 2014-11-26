@@ -6,6 +6,7 @@
 package rmistoreclient.ui.tabs;
 
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rmistoreclient.helper.RMIStoreClientHelper;
@@ -86,7 +87,8 @@ public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab impleme
     @Override
     public void doCallback(Object arguments) {
         if(arguments != null && arguments.getClass() == Double.class) {
-            jLabelBalanceValue.setText(" $" + arguments);
+            DecimalFormat df = new DecimalFormat("#.00");
+            jLabelBalanceValue.setText(" $" + df.format(arguments));
         }
     }
 }
