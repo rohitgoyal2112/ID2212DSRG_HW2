@@ -139,7 +139,7 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab implements
             try {
                 RMIStoreClientHelper.customerRemoteObj.sellItem(jTextFieldItemName.getText(),
                         Double.valueOf(jTextFieldItemPrice.getText()));
-            } catch (RemoteException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(RMIStoreClientSellPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }        
@@ -163,7 +163,7 @@ public class RMIStoreClientSellPanel extends RMIStoreClientGenericTab implements
         try {
             RMIStoreClientHelper.customerRemoteObj.callback = this;
             RMIStoreClientHelper.customerRemoteObj.getUserItems();          
-        } catch (RemoteException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(RMIStoreClientSellPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

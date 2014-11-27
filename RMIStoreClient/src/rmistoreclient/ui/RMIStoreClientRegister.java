@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javax.swing.JOptionPane.showMessageDialog;
+import rmistore.commons.exceptions.Rejected;
 import rmistore.commons.interfaces.Bank;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistore.commons.interfaces.CustomerRemote;
@@ -179,7 +180,7 @@ public class RMIStoreClientRegister extends javax.swing.JFrame {
                         break;
                 }
             }
-            catch (RemoteException | NotBoundException | MalformedURLException ex) {
+            catch (RemoteException | NotBoundException | MalformedURLException | Rejected ex) {
                 showMessageDialog(null, ex.getMessage());
                 
                 Logger.getLogger(RMIStoreClientRegister.class.getName()).

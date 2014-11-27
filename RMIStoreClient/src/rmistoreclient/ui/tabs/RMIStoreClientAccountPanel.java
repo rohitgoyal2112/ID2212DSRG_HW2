@@ -144,7 +144,7 @@ public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab impleme
             try {
                 RMIStoreClientHelper.accountObj.deposit((float) value);
                 jTextFieldDeposit.setText("");
-            } catch (RemoteException ex) {
+            } catch (Exception ex) {
                 showMessageDialog(RMIStoreClientHelper.currentFrame, ex.getMessage());
             }
         }
@@ -173,7 +173,7 @@ public class RMIStoreClientAccountPanel extends RMIStoreClientGenericTab impleme
             try {
                 RMIStoreClientHelper.accountObj.withdraw((float) value);
                 jTextFieldWithdraw.setText("");
-            } catch (RemoteException ex) {
+            } catch (Exception ex) {
                 showMessageDialog(RMIStoreClientHelper.currentFrame, ex.getMessage());
             }
         }

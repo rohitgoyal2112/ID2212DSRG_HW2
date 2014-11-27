@@ -49,12 +49,12 @@ public class AccountThreadImpl implements Account {
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(true);
                         isCalling = true;
                         double returnValue = accountObj.getBalance();
-                        isCalling = false;
                         callback.doCallback(returnValue);
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(false);
                     } catch (RemoteException ex) {
                         Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    isCalling = false;
                 }
 
             }.start();
@@ -73,12 +73,12 @@ public class AccountThreadImpl implements Account {
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(true);
                         isCalling = true;
                         accountObj.deposit(value);
-                        isCalling = false;
                         callback.doCallback("deposit");
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(false);
-                    } catch (RemoteException ex) {
+                    } catch (Rejected | RemoteException ex) {
                         Logger.getLogger(CustomerRemoteThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    isCalling = false;
                 }
 
             }.start();
@@ -96,7 +96,6 @@ public class AccountThreadImpl implements Account {
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(true);
                         isCalling = true;
                         accountObj.withdraw(value);
-                        isCalling = false;
                         callback.doCallback("withdraw");
                         RMIStoreClientHelper.accountObj.getLoader().setIndeterminate(false);
                     } catch (Rejected ex) {
@@ -106,6 +105,7 @@ public class AccountThreadImpl implements Account {
                     } catch (RemoteException ex) {
                         Logger.getLogger(AccountThreadImpl.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    isCalling = false;
                 }
 
             }.start();
