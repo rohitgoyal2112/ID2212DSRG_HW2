@@ -8,6 +8,7 @@ package rmistoreclient.helper;
 import javax.swing.JFrame;
 import rmistore.commons.interfaces.ClientRemote;
 import rmistoreclient.implementations.AccountThreadImpl;
+import rmistoreclient.implementations.AuthenticationThreadImpl;
 import rmistoreclient.implementations.CustomerRemoteThreadImpl;
 
 /**
@@ -22,6 +23,9 @@ public class RMIStoreClientHelper {
     // SERVER REMOTE COMMAND
     public final static int STARTRMI_COMMAND = 0;
     public final static int REGISTER_COMMAND = 1;
+    
+    // SERVER AUTHENTICATION COMMAND
+    public final static int START_AUTH_COMMAND = 20;
  
     // CUSTOMER REMOTE COMMAND
     public final static int SELLITEM_COMMAND = 10;
@@ -29,5 +33,6 @@ public class RMIStoreClientHelper {
     public static CustomerRemoteThreadImpl customerRemoteObj;
     public static ClientRemote clientRemoteObj;
     public static AccountThreadImpl accountObj;
+    public static AuthenticationThreadImpl authenticationObj;
     public static JFrame currentFrame;
 }

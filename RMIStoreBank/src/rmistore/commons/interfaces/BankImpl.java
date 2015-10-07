@@ -57,4 +57,5 @@ public class BankImpl extends UnicastRemoteObject implements Bank {
     private boolean hasAccount(String name) {
         return accounts.get(name) != null;
     }
+    
 }

@@ -5,6 +5,7 @@
  */
 package rmistoreclient;
 
+import rmistoreclient.ui.RMIStoreClientAuthentication;
 import rmistoreclient.ui.RMIStoreClientRegister;
 
 /**
@@ -17,7 +18,8 @@ public class RMIStoreClient {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new RMIStoreClientRegister().setVisible(true);
+//        new RMIStoreClientRegister().setVisible(true);
+        new RMIStoreClientAuthentication().setVisible(true);
     }
 
 }

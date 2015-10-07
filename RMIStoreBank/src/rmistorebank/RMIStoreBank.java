@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rmistore.commons.interfaces.Authentication;
+import rmistore.commons.interfaces.AuthenticationImpl;
 import rmistore.commons.interfaces.Bank;
 import rmistore.commons.interfaces.BankImpl;
 import rmistorebank.helper.RMIStoreBankHelper;
@@ -33,12 +35,14 @@ public class RMIStoreBank extends Thread {
         }
 
         try {            
-            Bank rmiBankObj = new BankImpl(RMIStoreBankHelper.RMIBankName);
-            Naming.rebind(RMIStoreBankHelper.RMIBankName, rmiBankObj);
+//            Bank rmiBankObj = new BankImpl(RMIStoreBankHelper.RMIBankName);
+            Authentication rmiAuthObj = new AuthenticationImpl(RMIStoreBankHelper.RMIBankName);
+            Naming.rebind(RMIStoreBankHelper.RMIBankName, rmiAuthObj);
         } catch (RemoteException | MalformedURLException ex) {
             Logger.getLogger(RMIStoreBank.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
     /**
      * @param args the command line arguments
      */
