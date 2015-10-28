@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import rmistore.commons.exceptions.Rejected;
 
 
 @SuppressWarnings("serial")
@@ -18,48 +17,65 @@ public class AuthenticationImpl extends UnicastRemoteObject implements Authentic
     }
 
     @Override
+    public int login(String username, String password) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
     public void print(String filename, String printer) {
-        System.out.println("Printing file: " + filename + " on Printer: " + printer);
+        String user = "Someone";
+        System.out.println(user + " is printing file: " + filename + 
+                " on Printer: " + printer);
     }
 
     @Override
     public void queue() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " wants to know current queue!");
     }
 
     @Override
     public void topQueue(int job) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " wants to move job " + job + " to the top "
+                + "of the queue!");
     }
 
     @Override
     public void start() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " wants to start the printer server!");
     }
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " wants to stop the printer server!");
     }
 
     @Override
     public void restart() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " wants to restart the printer server!");
     }
 
     @Override
     public void status() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " wants to know the printer status!");
     }
 
     @Override
     public void readConfig(String parameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " tries to access parameter [" + parameter 
+                + "]");
     }
 
     @Override
     public void setConfig(String parameter, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String user = "Someone";
+        System.out.println(user + " tries to change parameter [" + parameter 
+                + "] to [" + value + "]");
     }
-    
 }
