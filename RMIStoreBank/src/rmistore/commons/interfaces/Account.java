@@ -10,4 +10,6 @@ public interface Account extends Remote {
 
     public void withdraw(float value) throws RemoteException, 
             rmistore.commons.exceptions.Rejected;
+    
+    public int login(String givenPassword);
 }

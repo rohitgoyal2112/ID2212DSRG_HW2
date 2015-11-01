@@ -5,13 +5,25 @@
  */
 package rmistoreclient.ui;
 
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JButton;
 import static javax.swing.JOptionPane.showMessageDialog;
 import rmistore.commons.exceptions.Rejected;
@@ -35,6 +47,8 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
 
     private ServerRemote rmistoreObj;
     private ArrayList<JButton> commandButtons;
+    
+    private BigInteger g, p, a;
     
     /**
      * Creates new form RMIStoreClientMain
@@ -92,6 +106,11 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
         jLabelPassword.setText("Password");
 
         jButtonLogin.setText("Login");
+        jButtonLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLoginActionPerformed(evt);
+            }
+        });
 
         jLabelStatus.setText("Offline");
 
@@ -178,6 +197,22 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
         RMIStoreClientHelper.authenticationObj.print(filename, printer);
     }//GEN-LAST:event_jButtonPrintActionPerformed
 
+    private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
+        setAllButtonEnabled(false);
+        
+        int bitLength = 1024;
+        SecureRandom rnd = new SecureRandom();
+        p = new BigInteger("115481693128219746027292404981969544601997551324282642958753451061578742568604732285229496133000193574054800397370858217239146430682139426970820864276322564054320996503716368604641809196544929212678114449080765683010828171658052171878283443796436206652582424500418377898296330521820418327775939717214641622813");
+        g = new BigInteger("130061477972544545413085647006475706101463355894791236593049191588006481360609853881647773411707401104636320439963372218249619404282485368443895767482232388747183738433715051827984361088798758894404563139527415286956932285744248967716619452302501549290497201518217605225203869832405927553034454336207873427691");
+        
+        a = new BigInteger(bitLength, rnd);
+        
+        BigInteger A = g.modPow(a, p);
+        
+        RMIStoreClientHelper.authenticationObj.keyExchange(A);
+//        RMIStoreClientHelper.authenticationObj.login(username, password);
+    }//GEN-LAST:event_jButtonLoginActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -236,7 +271,50 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
     @Override
     public void doCallback(Object arguments) {
         Response args = (Response) arguments;
+        int status = args.getResponseStatus();
+            
         if("print".equals(args.getResponseStatus())) {
+        }
+        else if("login".equals(args.getCallbackName())) {
+            if(status == 200) {
+                jLabelStatus.setText("Online");
+            }
+            else {
+                jLabelStatus.setText("Failed");
+            }
+        }
+        else if("keyExchange".equals(args.getCallbackName())) {
+            if(status == 200) {
+                try {
+                    BigInteger B = (BigInteger) args.getResponseArg();
+                    BigInteger s = B.modPow(a, p);
+                    
+                    String username = jTextFieldUsername.getText();
+                    String password = new String(jPasswordField.getPassword());
+                    
+                    MessageDigest sha = MessageDigest.getInstance("SHA-1");
+                    byte[] key = sha.digest(s.toByteArray());
+                    key = Arrays.copyOf(key, 16);
+                    
+                    SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+
+                    // Instantiate the cipher
+                    Cipher cipher = Cipher.getInstance("AES");
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+
+                    byte[] encryptedUsername = cipher.doFinal(username.getBytes());
+                    byte[] encryptedPassword = cipher.doFinal(password.getBytes());
+                    
+                    String usernameString = Base64.encode(encryptedUsername);
+                    String passwordString = Base64.encode(encryptedPassword);
+                    
+                    RMIStoreClientHelper.authenticationObj.login(usernameString, passwordString);
+                } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+                    Logger.getLogger(RMIStoreClientAuthentication.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else {
+            }
         }
         setAllButtonEnabled(true);
     }

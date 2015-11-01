@@ -2,11 +2,16 @@ package rmistore.commons.interfaces;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import rmistorebank.helper.CryptoHelper;
 
 @SuppressWarnings("serial")
 public class AccountImpl extends UnicastRemoteObject implements Account {
     private double balance = 0;
     private String name;
+    private String password;
 
     /**
      * Constructs a persistently named object.
@@ -14,6 +19,15 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
     public AccountImpl(String name) throws RemoteException {
         super();
         this.name = name;
+    }
+
+    /**
+     * Constructs a persistently named object.
+     */
+    public AccountImpl(String name, String password) throws RemoteException {
+        super();
+        this.name = name;
+        this.password = password;
     }
 
     @Override
@@ -45,5 +59,21 @@ public class AccountImpl extends UnicastRemoteObject implements Account {
     @Override
     public synchronized double getBalance() throws RemoteException {
         return balance;
+    }
+    
+    @Override
+    public int login(String givenPassword) {
+        try {
+            String challengePassword = CryptoHelper.createPassword(givenPassword);
+            if(challengePassword.equals(password)) {
+                return 200;
+            }
+            else {
+                return 500;
+            }
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(AccountImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return 500;
+        }
     }
 }
