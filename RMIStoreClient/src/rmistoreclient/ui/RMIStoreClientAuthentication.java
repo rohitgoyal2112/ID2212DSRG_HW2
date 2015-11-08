@@ -32,6 +32,7 @@ import rmistore.commons.interfaces.Bank;
 import rmistore.commons.interfaces.CustomerRemote;
 import rmistore.commons.interfaces.ServerRemote;
 import rmistore.commons.model.Response;
+import rmistoreclient.helper.RMIStoreClientCrypto;
 import rmistoreclient.helper.RMIStoreClientHelper;
 import rmistoreclient.implementations.AccountThreadImpl;
 import rmistoreclient.implementations.AuthenticationThreadImpl;
@@ -48,7 +49,10 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
     private ServerRemote rmistoreObj;
     private ArrayList<JButton> commandButtons;
     
+    private int bitLength = 1024;
+    private SecureRandom rnd = new SecureRandom();
     private BigInteger g, p, a;
+    private long tStart;
     
     /**
      * Creates new form RMIStoreClientMain
@@ -57,6 +61,8 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
         initComponents();
 
         populatingCommandButtons();
+        
+        RMIStoreClientCrypto.GenerateRSAKeys();
         
         new RequestThread(RMIStoreClientHelper.START_AUTH_COMMAND).start();
     }
@@ -84,6 +90,16 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
         jPasswordField = new javax.swing.JPasswordField();
         jButtonLogin = new javax.swing.JButton();
         jLabelStatus = new javax.swing.JLabel();
+        jLabelRequestTime = new javax.swing.JLabel();
+        jButtonQueue = new javax.swing.JButton();
+        jButtonTopQueue = new javax.swing.JButton();
+        jButtonStart = new javax.swing.JButton();
+        jButtonStop = new javax.swing.JButton();
+        jButtonRestart = new javax.swing.JButton();
+        jButtonStatus = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jButtonReadConfig = new javax.swing.JButton();
+        jButtonSetConfig = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -114,6 +130,72 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
 
         jLabelStatus.setText("Offline");
 
+        jButtonQueue.setText("Queue");
+        jButtonQueue.setEnabled(false);
+        jButtonQueue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonQueueActionPerformed(evt);
+            }
+        });
+
+        jButtonTopQueue.setText("Top Queue");
+        jButtonTopQueue.setEnabled(false);
+        jButtonTopQueue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonTopQueueActionPerformed(evt);
+            }
+        });
+
+        jButtonStart.setText("Start");
+        jButtonStart.setEnabled(false);
+        jButtonStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonStartActionPerformed(evt);
+            }
+        });
+
+        jButtonStop.setText("Stop");
+        jButtonStop.setEnabled(false);
+        jButtonStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonStopActionPerformed(evt);
+            }
+        });
+
+        jButtonRestart.setText("Restart");
+        jButtonRestart.setEnabled(false);
+        jButtonRestart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRestartActionPerformed(evt);
+            }
+        });
+
+        jButtonStatus.setText("Status");
+        jButtonStatus.setEnabled(false);
+        jButtonStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonStatusActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Commands");
+
+        jButtonReadConfig.setText("Read Config");
+        jButtonReadConfig.setEnabled(false);
+        jButtonReadConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonReadConfigActionPerformed(evt);
+            }
+        });
+
+        jButtonSetConfig.setText("Set Config");
+        jButtonSetConfig.setEnabled(false);
+        jButtonSetConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSetConfigActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -122,15 +204,14 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 250, Short.MAX_VALUE)
+                        .addComponent(jLabelRequestTime)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelOutput)
-                                    .addComponent(jButtonPrint))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabelOutput)
+                                .addGap(0, 24, Short.MAX_VALUE)
                                 .addComponent(jTextFieldOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jButtonLogin)
                             .addComponent(jLabelStatus)
@@ -150,7 +231,26 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jTextFieldInput2)
                                     .addComponent(jTextFieldInput1))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jButtonSetConfig, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButtonTopQueue, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButtonReadConfig, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonRestart, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                    .addComponent(jButtonStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButtonPrint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButtonQueue, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButtonStart, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                    .addComponent(jButtonStop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -159,31 +259,44 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelUsername))
+                    .addComponent(jLabelUsername)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelPassword)
-                    .addComponent(jPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonPrint)
+                    .addComponent(jButtonStart))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonLogin)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonLogin)
+                    .addComponent(jButtonQueue)
+                    .addComponent(jButtonStop))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelStatus)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelStatus)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonTopQueue)
+                        .addComponent(jButtonRestart)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelOutput))
+                    .addComponent(jLabelOutput)
+                    .addComponent(jButtonStatus)
+                    .addComponent(jButtonReadConfig))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelInput1)
-                    .addComponent(jTextFieldInput1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldInput1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonSetConfig))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelInput2)
                     .addComponent(jTextFieldInput2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
-                .addComponent(jButtonPrint)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelRequestTime))
                 .addContainerGap())
         );
 
@@ -192,26 +305,83 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
 
     private void jButtonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintActionPerformed
         setAllButtonEnabled(false);
-        String filename = jTextFieldInput1.getText();
-        String printer = jTextFieldInput2.getText();
+        String filename = RMIStoreClientCrypto.AESEncrypt(
+                jTextFieldInput1.getText(), RMIStoreClientCrypto.s);
+        String printer = RMIStoreClientCrypto.AESEncrypt(
+                jTextFieldInput2.getText(), RMIStoreClientCrypto.s);
+        
         RMIStoreClientHelper.authenticationObj.print(filename, printer);
     }//GEN-LAST:event_jButtonPrintActionPerformed
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
+        try {
+            tStart = System.currentTimeMillis();
+            setAllButtonEnabled(false);
+            
+            p = new BigInteger(bitLength, rnd);
+            g = new BigInteger(bitLength, rnd);
+            
+            RMIStoreClientHelper.authenticationObj.publicValueExchange(p, g);
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIStoreClientAuthentication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButtonLoginActionPerformed
+
+    private void jButtonQueueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonQueueActionPerformed
         setAllButtonEnabled(false);
         
-        int bitLength = 1024;
-        SecureRandom rnd = new SecureRandom();
-        p = new BigInteger("115481693128219746027292404981969544601997551324282642958753451061578742568604732285229496133000193574054800397370858217239146430682139426970820864276322564054320996503716368604641809196544929212678114449080765683010828171658052171878283443796436206652582424500418377898296330521820418327775939717214641622813");
-        g = new BigInteger("130061477972544545413085647006475706101463355894791236593049191588006481360609853881647773411707401104636320439963372218249619404282485368443895767482232388747183738433715051827984361088798758894404563139527415286956932285744248967716619452302501549290497201518217605225203869832405927553034454336207873427691");
+        RMIStoreClientHelper.authenticationObj.queue();
+    }//GEN-LAST:event_jButtonQueueActionPerformed
+
+    private void jButtonTopQueueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonTopQueueActionPerformed
+        setAllButtonEnabled(false);
+        String job = RMIStoreClientCrypto.AESEncrypt(
+                jTextFieldInput1.getText(), RMIStoreClientCrypto.s);
         
-        a = new BigInteger(bitLength, rnd);
+        RMIStoreClientHelper.authenticationObj.topQueue(job);
+    }//GEN-LAST:event_jButtonTopQueueActionPerformed
+
+    private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartActionPerformed
+        setAllButtonEnabled(false);
         
-        BigInteger A = g.modPow(a, p);
+        RMIStoreClientHelper.authenticationObj.start();
+    }//GEN-LAST:event_jButtonStartActionPerformed
+
+    private void jButtonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStopActionPerformed
+        setAllButtonEnabled(false);
         
-        RMIStoreClientHelper.authenticationObj.keyExchange(A);
-//        RMIStoreClientHelper.authenticationObj.login(username, password);
-    }//GEN-LAST:event_jButtonLoginActionPerformed
+        RMIStoreClientHelper.authenticationObj.stop();
+    }//GEN-LAST:event_jButtonStopActionPerformed
+
+    private void jButtonRestartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRestartActionPerformed
+        setAllButtonEnabled(false);
+        
+        RMIStoreClientHelper.authenticationObj.restart();
+    }//GEN-LAST:event_jButtonRestartActionPerformed
+
+    private void jButtonStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStatusActionPerformed
+        setAllButtonEnabled(false);
+        
+        RMIStoreClientHelper.authenticationObj.status();
+    }//GEN-LAST:event_jButtonStatusActionPerformed
+
+    private void jButtonReadConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadConfigActionPerformed
+        setAllButtonEnabled(false);
+        String parameter = RMIStoreClientCrypto.AESEncrypt(
+                jTextFieldInput1.getText(), RMIStoreClientCrypto.s);
+        
+        RMIStoreClientHelper.authenticationObj.readConfig(parameter);
+    }//GEN-LAST:event_jButtonReadConfigActionPerformed
+
+    private void jButtonSetConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetConfigActionPerformed
+                setAllButtonEnabled(false);
+        String parameter = RMIStoreClientCrypto.AESEncrypt(
+                jTextFieldInput1.getText(), RMIStoreClientCrypto.s);
+        String value = RMIStoreClientCrypto.AESEncrypt(
+                jTextFieldInput2.getText(), RMIStoreClientCrypto.s);
+        
+        RMIStoreClientHelper.authenticationObj.setConfig(parameter, value);
+    }//GEN-LAST:event_jButtonSetConfigActionPerformed
 
     /**
      * @param args the command line arguments
@@ -254,10 +424,20 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonLogin;
     private javax.swing.JButton jButtonPrint;
+    private javax.swing.JButton jButtonQueue;
+    private javax.swing.JButton jButtonReadConfig;
+    private javax.swing.JButton jButtonRestart;
+    private javax.swing.JButton jButtonSetConfig;
+    private javax.swing.JButton jButtonStart;
+    private javax.swing.JButton jButtonStatus;
+    private javax.swing.JButton jButtonStop;
+    private javax.swing.JButton jButtonTopQueue;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelInput1;
     private javax.swing.JLabel jLabelInput2;
     private javax.swing.JLabel jLabelOutput;
     private javax.swing.JLabel jLabelPassword;
+    private javax.swing.JLabel jLabelRequestTime;
     private javax.swing.JLabel jLabelStatus;
     private javax.swing.JLabel jLabelUsername;
     private javax.swing.JPasswordField jPasswordField;
@@ -273,7 +453,13 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
         Response args = (Response) arguments;
         int status = args.getResponseStatus();
             
-        if("print".equals(args.getResponseStatus())) {
+        if("print".equals(args.getCallbackName())) {
+            if(status == 200) {
+                jTextFieldOutput.setText("Print successful!");
+            }
+            else {
+                jTextFieldOutput.setText("Print failed!");
+            }
         }
         else if("login".equals(args.getCallbackName())) {
             if(status == 200) {
@@ -282,36 +468,33 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
             else {
                 jLabelStatus.setText("Failed");
             }
+            
+            long tEnd = System.currentTimeMillis();
+            long tDelta = tEnd - tStart;
+            double elapsedSeconds = tDelta / 1000.0;
+            jLabelRequestTime.setText("Request Time: " + elapsedSeconds + " s");
+        }
+        else if("publicValueExchange".equals(args.getCallbackName())) {
+            if(status == 200) {
+                // Public value is transferred, continue with keyExchange mechanism                
+                a = new BigInteger(bitLength, rnd);
+        
+                BigInteger A = g.modPow(a, p);
+                
+                RMIStoreClientHelper.authenticationObj.keyExchange(A.toString());
+            }
         }
         else if("keyExchange".equals(args.getCallbackName())) {
             if(status == 200) {
-                try {
-                    BigInteger B = (BigInteger) args.getResponseArg();
-                    BigInteger s = B.modPow(a, p);
-                    
-                    String username = jTextFieldUsername.getText();
-                    String password = new String(jPasswordField.getPassword());
-                    
-                    MessageDigest sha = MessageDigest.getInstance("SHA-1");
-                    byte[] key = sha.digest(s.toByteArray());
-                    key = Arrays.copyOf(key, 16);
-                    
-                    SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-
-                    // Instantiate the cipher
-                    Cipher cipher = Cipher.getInstance("AES");
-                    cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-
-                    byte[] encryptedUsername = cipher.doFinal(username.getBytes());
-                    byte[] encryptedPassword = cipher.doFinal(password.getBytes());
-                    
-                    String usernameString = Base64.encode(encryptedUsername);
-                    String passwordString = Base64.encode(encryptedPassword);
-                    
-                    RMIStoreClientHelper.authenticationObj.login(usernameString, passwordString);
-                } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-                    Logger.getLogger(RMIStoreClientAuthentication.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                BigInteger B = (BigInteger) args.getResponseArg();
+                RMIStoreClientCrypto.s = B.modPow(a, p);
+                String username = jTextFieldUsername.getText();
+                String password = new String(jPasswordField.getPassword());
+                String usernameString = RMIStoreClientCrypto.AESEncrypt(
+                        username, RMIStoreClientCrypto.s);
+                String passwordString = RMIStoreClientCrypto.AESEncrypt(
+                        password, RMIStoreClientCrypto.s);
+                RMIStoreClientHelper.authenticationObj.login(usernameString, passwordString);
             }
             else {
             }
@@ -328,6 +511,14 @@ public class RMIStoreClientAuthentication extends javax.swing.JFrame implements 
     private void populatingCommandButtons() {
         commandButtons = new ArrayList<>();
         commandButtons.add(jButtonPrint);
+        commandButtons.add(jButtonQueue);
+        commandButtons.add(jButtonReadConfig);
+        commandButtons.add(jButtonRestart);
+        commandButtons.add(jButtonSetConfig);
+        commandButtons.add(jButtonStart);
+        commandButtons.add(jButtonStatus);
+        commandButtons.add(jButtonStop);
+        commandButtons.add(jButtonTopQueue);
     }
 
     private class RequestThread extends Thread {

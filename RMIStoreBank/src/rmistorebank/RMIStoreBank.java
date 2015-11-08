@@ -16,6 +16,7 @@ import rmistore.commons.interfaces.Authentication;
 import rmistore.commons.interfaces.AuthenticationImpl;
 import rmistore.commons.interfaces.Bank;
 import rmistore.commons.interfaces.BankImpl;
+import rmistorebank.helper.CryptoHelper;
 import rmistorebank.helper.RMIStoreBankHelper;
 
 /**
@@ -35,6 +36,8 @@ public class RMIStoreBank extends Thread {
         }
 
         try {            
+            CryptoHelper.GenerateRSAKeys();
+            
 //            Bank rmiBankObj = new BankImpl(RMIStoreBankHelper.RMIBankName);
             Authentication rmiAuthObj = new AuthenticationImpl(RMIStoreBankHelper.RMIBankName);
             Naming.rebind(RMIStoreBankHelper.RMIBankName, rmiAuthObj);

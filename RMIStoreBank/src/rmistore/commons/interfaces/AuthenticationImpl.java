@@ -9,6 +9,11 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,36 +32,59 @@ public class AuthenticationImpl extends UnicastRemoteObject implements Authentic
     private String bankName;
     private String user = "Someone";
     private Map<String, AuthUser> accounts = new HashMap<>();
+
+    /**
+     * Diffie Hellman
+     */
+    private int bitLength = 1024;
+    private SecureRandom rnd = new SecureRandom();
+    private BigInteger g, p, b;
     
-    private byte[] aesKey;
+    /**
+     * AES
+     */
+    private BigInteger s = null;
 
     public AuthenticationImpl(String bankName) throws RemoteException {
         //        super();
         this.bankName = bankName;
         
         try {
-            String dummyUsername = "David";
-            String dummyRawPassword = "hello";
-            String storedDummyPassword = CryptoHelper.createPassword(dummyRawPassword);
-            AuthUser dummyAccount = new AuthUser(dummyUsername, storedDummyPassword);
+            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
             
-            accounts.put(dummyUsername, dummyAccount);
-        } catch (NoSuchAlgorithmException ex) {
+            Connection con = DriverManager.getConnection(
+                    "jdbc:derby://localhost:1527/Authentication", 
+                    "authentication", "authentication");
+            
+            Statement stmt = con.createStatement();
+        
+            ResultSet rs = stmt.executeQuery("SELECT * FROM AUTHENTICATION.AUTHUSER");
+            while (rs.next()) {
+                String username = rs.getString("Username");
+                String password = rs.getString("Password");
+                
+                accounts.put(username, new AuthUser(username, password));
+            }
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(AuthenticationImpl.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Cannot create dummy user!");
+        } catch (SQLException ex) {
+            Logger.getLogger(AuthenticationImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
     public int login(String username, String password) throws RemoteException {
         
-        username = decrypt(username);
-        password = decrypt(password);
+        username = CryptoHelper.AESDecrypt(username, s);
+        password = CryptoHelper.AESDecrypt(password, s);
         
         this.user = username;
         System.out.println(user + " is trying to login!");
         
         AuthUser account = accounts.get(username);
+        if(account == null) {
+            return 500;
+        }
         int loginStatus = account.login(password);
         if(loginStatus == 200) {
             System.out.println("[" + user + "] Login Successful!");
@@ -65,100 +93,237 @@ public class AuthenticationImpl extends UnicastRemoteObject implements Authentic
             System.out.println("[" + user + "] Login Failed!");            
         }
         
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(AuthenticationImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return loginStatus;
     }
     
     @Override
-    public void print(String filename, String printer) {
-        System.out.println(user + " is printing file: " + filename + 
+    public String print(String filename, String printer) {
+        if(checkIsAuthenticated()) {
+            filename = CryptoHelper.AESDecrypt(filename, s);
+            printer = CryptoHelper.AESDecrypt(printer, s);
+            
+            System.out.println(user + " is printing file: " + filename + 
                 " on Printer: " + printer);
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'print' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void queue() {
-        System.out.println(user + " wants to know current queue!");
+    public String queue() {        
+        if(checkIsAuthenticated()) {
+            
+            System.out.println(user + " wants to know current queue!");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'queue' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void topQueue(int job) {
-        System.out.println(user + " wants to move job " + job + " to the top "
+    public String topQueue(String job) {
+        if(checkIsAuthenticated()) {
+            job = CryptoHelper.AESDecrypt(job, s);
+            Integer intJob = Integer.parseInt(job);
+            
+            System.out.println(user + " wants to move job " + intJob + " to the top "
                 + "of the queue!");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'topQueue' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void start() {
-        System.out.println(user + " wants to start the printer server!");
+    public String start() {
+        if(checkIsAuthenticated()) {
+            
+            System.out.println(user + " wants to start the printer server!");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'start' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void stop() {
-        System.out.println(user + " wants to stop the printer server!");
+    public String stop() {
+        if(checkIsAuthenticated()) {
+            
+            System.out.println(user + " wants to stop the printer server!");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'stop' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void restart() {
-        System.out.println(user + " wants to restart the printer server!");
+    public String restart() {
+        if(checkIsAuthenticated()) {
+            
+            System.out.println(user + " wants to restart the printer server!");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'restart' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void status() {
-        System.out.println(user + " wants to know the printer status!");
+    public String status() {
+        if(checkIsAuthenticated()) {
+            
+            System.out.println(user + " wants to know the printer status!");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'status' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void readConfig(String parameter) {
-        System.out.println(user + " tries to access parameter [" + parameter 
+    public String readConfig(String parameter) {
+        if(checkIsAuthenticated()) {
+            parameter = CryptoHelper.AESDecrypt(parameter, s);
+            
+            System.out.println(user + " tries to access parameter [" + parameter 
                 + "]");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'status' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public void setConfig(String parameter, String value) {
-        System.out.println(user + " tries to change parameter [" + parameter 
+    public String setConfig(String parameter, String value) {
+        if(checkIsAuthenticated()) {
+            parameter = CryptoHelper.AESDecrypt(parameter, s);
+            value = CryptoHelper.AESDecrypt(value, s);
+            
+            System.out.println(user + " tries to change parameter [" + parameter 
                 + "] to [" + value + "]");
+            
+            return CryptoHelper.AESEncrypt("200", s);
+        }
+        else {
+            System.out.println("Someone is trying to 'status' without "
+                    + "authentication!");
+            
+            if(s == null) {
+                return "500";
+            }
+            else {
+                return CryptoHelper.AESEncrypt("500", s);
+            }
+        }
     }
 
     @Override
-    public BigInteger keyExchange(BigInteger publicValue) throws RemoteException {
-        try {
-            int bitLength = 1024;
-            SecureRandom rnd = new SecureRandom();
-            BigInteger p = new BigInteger("115481693128219746027292404981969544601997551324282642958753451061578742568604732285229496133000193574054800397370858217239146430682139426970820864276322564054320996503716368604641809196544929212678114449080765683010828171658052171878283443796436206652582424500418377898296330521820418327775939717214641622813");
-            BigInteger g = new BigInteger("130061477972544545413085647006475706101463355894791236593049191588006481360609853881647773411707401104636320439963372218249619404282485368443895767482232388747183738433715051827984361088798758894404563139527415286956932285744248967716619452302501549290497201518217605225203869832405927553034454336207873427691");
-            
-            BigInteger b = new BigInteger(bitLength, rnd);
-            
-            BigInteger B = g.modPow(b, p);
-            
-            BigInteger s = publicValue.modPow(b, p);
-            
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            this.aesKey = sha.digest(s.toByteArray());
-            this.aesKey = Arrays.copyOf(this.aesKey, 16);
-            
-            return B;
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(AuthenticationImpl.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    public int publicValueExchange(BigInteger p, BigInteger g) throws RemoteException {
+        this.p = p;
+        this.g = g;
+        
+        return 200;
+    }
+    
+    @Override
+    public String keyExchange(String clientValue) throws RemoteException {
+        String decryptedClientValue = CryptoHelper.RSADecrypt(clientValue,
+                CryptoHelper.privKey);
+        BigInteger biClientValue = new BigInteger(decryptedClientValue);
+        b = new BigInteger(bitLength, rnd);
+        BigInteger B = g.modPow(b, p);
+        s = biClientValue.modPow(b, p);
+        String encryptedResponse = CryptoHelper.RSAEncrypt(B.toString(),
+                CryptoHelper.privKey);
+        return encryptedResponse;
     }
 
-    private String decrypt(String encrypted) {
-        try {
-            
-            byte[] encryptedBytes = Base64.decode(encrypted);
-            
-            // Generate the secret key specs.
-            SecretKeySpec secretKeySpec = new SecretKeySpec(this.aesKey, "AES");
-            
-            Cipher cipher = Cipher.getInstance("AES");            
-            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-            
-            byte[] original = cipher.doFinal(encryptedBytes);
-            
-            return new String(original);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | Base64DecodingException ex) {
-            Logger.getLogger(AuthenticationImpl.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    private boolean checkIsAuthenticated() {
+        return user != "Someone";
     }
 }
